@@ -41,17 +41,16 @@ TEXT_REPLACE = {"October __, 2026": "October 14, 2026",
 
 # ---- full paragraph rewrites (match by unique prefix) -> (new_text, bold_prefix_or_None) ----
 R_MAIN = ("The misses of the report pipeline show where information was lost. Of the 55 urgent "
-    "studies it missed, 5 had a report that named a critical finding that GPT-5 did not escalate. "
-    "Of the remainder, in 40 the classifier scored the missed finding above 0.5 (median 0.92) while "
-    "the report named none of the study’s critical findings (Fig. 1c), and in 10 the classifier also "
-    "scored the finding at or below 0.5. Most of these silent reports read as explicitly normal, for "
-    "example, “Study is unremarkable.” They were complete outputs rather than truncated or empty "
-    "generations, and the language model had received the same bone window as the classifier. The "
-    "omitted findings included calvarial fracture, intraparenchymal hemorrhage, subdural hematoma "
-    "and mass effect (Extended Data Fig. 1). A normal-reading report is more consequential than a "
-    "missing flag, because it reassures and moves a scan down the worklist. Under the original "
-    "evaluation these studies would count as failures of perception, although the encoder had "
-    "represented the finding.")
+    "studies it missed, in 40 the classifier had already scored the missed finding above 0.5 "
+    "(median 0.92) while the report named none of the study’s critical findings (Fig. 1c). Most of "
+    "these silent reports read as explicitly normal, for example, “Study is unremarkable.” They "
+    "were complete outputs rather than truncated or empty generations, and the language model had "
+    "received the same bone window as the classifier. The omitted findings included calvarial "
+    "fracture, intraparenchymal hemorrhage, subdural hematoma and mass effect. A normal-reading "
+    "report is more consequential than a missing flag, because it reassures and moves a scan down "
+    "the worklist. Under the original evaluation these studies would count as failures of "
+    "perception, although the encoder had represented the finding. The remaining 15 misses are "
+    "decomposed in Extended Data Fig. 1.")
 
 R_METHODS = ("Each urgent study was classified as detected or missed by each readout, giving a "
     "two-by-two table. A study missed by the report pipeline was a reasoning miss if its report "
@@ -79,13 +78,12 @@ R_FIG1 = ("Fig. 1. ", "NeuroVFM’s diagnostic classifier detects most urgent fi
     "with 95% CI (AUROC 0.949, 95% CI 0.928–0.967). Orange point, the report pipeline (sensitivity "
     "0.733 at a flag rate of 0.341). Blue point, the classifier at the same flag rate, a threshold "
     "chosen without labels; the difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
-    "Decomposition of the 55 urgent studies the report pipeline missed. Of these, 40 are decoding "
-    "misses, in which the classifier scored the missed finding above 0.5 while the report named "
-    "none of the study’s critical findings; 10 are perception misses, missed by both readouts; and "
-    "5 are reasoning misses, in which the report named a critical finding that GPT-5 did not "
-    "escalate. Below, the classifier’s score on the missed finding for the 40 decoding misses "
-    "(dotted line, 0.5; median 0.92); in 38 of the 40 the report named none of the nine critical "
-    "findings. Confidence intervals in b are from 2,000 study-level bootstrap resamples.")
+    "Of the 55 urgent studies the report pipeline missed, in 40 (blue) the classifier had already "
+    "scored the missed finding above 0.5 while the report named none of the study’s critical "
+    "findings; lines connect this group to their classifier scores below (dotted line, 0.5; median "
+    "0.92). In 38 of the 40 the report named none of the nine critical findings. The full "
+    "decomposition of the 55 misses is in Extended Data Fig. 1. Confidence intervals in b are from "
+    "2,000 study-level bootstrap resamples.")
 
 R_ED1 = ("Extended Data Fig. 1. ", "Decomposition of report-pipeline misses under alternative "
     "definitions and screening models. a, Decomposition of the 55 misses under the primary "
