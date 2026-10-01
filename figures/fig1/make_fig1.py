@@ -228,12 +228,8 @@ def panel_b(curve_csv):
                 xytext=(PROSE_FLAG + 12, PROSE_SENS - 16), fontsize=FS_S, color=RPT,
                 weight="bold", va="center",
                 arrowprops=dict(arrowstyle="-", lw=0.3, color=RPT, shrinkB=2.5))
-    ax.text(99, 30, f"AUROC {AUROC:.3f}\n({AUROC_CI[0]:.3f}–{AUROC_CI[1]:.3f})",
+    ax.text(99, 20, f"AUROC {AUROC:.3f}\n({AUROC_CI[0]:.3f}–{AUROC_CI[1]:.3f})",
             ha="right", va="bottom", fontsize=FS, color=CLS, weight="bold", linespacing=1.2)
-    ax.text(99, 15, "matches the report pipeline's\nsensitivity at the same flag rate\n"
-            f"(Δ {DSENS:.1f} pp, 95% CI "
-            f"{DSENS_CI[0]:.1f} to +{DSENS_CI[1]:.1f})",
-            ha="right", va="bottom", fontsize=FS_S, color=SUB, linespacing=1.3)
 
     ax.set_xlim(0, 100); ax.set_ylim(0, 100)
     ax.set_xticks([0, 25, 50, 75, 100]); ax.set_yticks([0, 25, 50, 75, 100])
@@ -282,13 +278,25 @@ def panel_c():
 
 
 def panel_d(scores_csv):
-    letter(66, 52, "c", "Decoding misses")
-    T(70.5, 56.3, "report said normal — but the classifier saw it", fs=FS_S, color=RPT,
-      style="italic", va="top")
+    letter(66, 52, "c", "Why the report missed urgent studies")
     X0, XW = 72, 103                                    # shared left edge and width (mm)
-
-    # score strip
-    sy, sh = 70, 24
+    # decomposition of all 55 report-pipeline misses
+    by, bh, left, total = 63, 5.5, X0, 55
+    for (lab, n), col in zip(DECOMP, (RPT, PER, REA)):
+        w = XW * n / total
+        CV.add_patch(Rectangle((left, by), w, bh, fc=col, ec="white", lw=0.6, zorder=5))
+        T(left + w / 2, by + bh / 2, str(n), ha="center", va="center", fs=FS_S,
+          weight="bold", color="white" if col != REA else INK)
+        left += w
+    T(X0 + XW, by - 1.4, "55 urgent studies the report pipeline missed", ha="right",
+      fs=FS_S, color=SUB)
+    T(X0, by + bh + 2.6, "Decoding (40): the classifier scored it, the report said nothing",
+      fs=FS_S, color=RPT, weight="bold")
+    T(X0, by + bh + 5.2, "Perception (10): both readouts missed it        "
+      "Reasoning (5): report named it, not escalated", fs=FS_S - 0.3, color=SUB)
+    dec_right = X0 + XW * DECOMP[0][1] / total
+    # decoding-score strip
+    sy, sh = 80, 18
     ax = ax_mm(X0, sy, XW, sh)
     if scores_csv and os.path.exists(scores_csv):
         import pandas as pd
@@ -306,11 +314,11 @@ def panel_d(scores_csv):
     ax.plot([med, med], [-0.9, 0.9], color=INK, lw=0.8, zorder=4)
     ax.text(med - 0.012, 1.12, f"median {med:.2f}", ha="right", va="bottom",
             fontsize=FS_S, clip_on=False)
-    ax.text(0.26, 0.55, f"{NONE_NAMED[0]} of {n} reports named\n"
+    ax.text(0.25, 0.62, f"{NONE_NAMED[0]} of {NONE_NAMED[1]} reports named\n"
             "none of the nine critical findings", ha="center", va="center",
             fontsize=FS_S, color=RPT)
-    ax.text(0.26, -0.72, f"n = {n} decoding misses", ha="center", va="center",
-            fontsize=FS_S, color=SUB)
+    ax.text(0.25, -0.62, "the report called each normal;\nthe classifier scored it high",
+            ha="center", va="center", fontsize=FS_S, color=SUB, linespacing=1.2)
     ax.text(0.49, -1.02, "0.5", ha="right", va="bottom", fontsize=FS_S, color=SUB)
     ax.set_xlim(0, 1.02); ax.set_ylim(-1.15, 1.15)
     ax.spines["bottom"].set_bounds(0, 1)

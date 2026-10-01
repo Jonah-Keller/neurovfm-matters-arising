@@ -79,11 +79,13 @@ R_FIG1 = ("Fig. 1. ", "NeuroVFM’s diagnostic classifier detects most urgent fi
     "with 95% CI (AUROC 0.949, 95% CI 0.928–0.967). Orange point, the report pipeline (sensitivity "
     "0.733 at a flag rate of 0.341). Blue point, the classifier at the same flag rate, a threshold "
     "chosen without labels; the difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
-    "Classifier score on the missed finding for the 40 decoding misses — urgent studies the report "
-    "pipeline missed in which the classifier scored the finding above 0.5 while the report named "
-    "none of the study’s critical findings. Dotted line, 0.5; the median score was 0.92, and in 38 "
-    "of the 40 the report named none of the nine critical findings. Confidence intervals in b are "
-    "from 2,000 study-level bootstrap resamples.")
+    "Decomposition of the 55 urgent studies the report pipeline missed. Of these, 40 are decoding "
+    "misses, in which the classifier scored the missed finding above 0.5 while the report named "
+    "none of the study’s critical findings; 10 are perception misses, missed by both readouts; and "
+    "5 are reasoning misses, in which the report named a critical finding that GPT-5 did not "
+    "escalate. Below, the classifier’s score on the missed finding for the 40 decoding misses "
+    "(dotted line, 0.5; median 0.92); in 38 of the 40 the report named none of the nine critical "
+    "findings. Confidence intervals in b are from 2,000 study-level bootstrap resamples.")
 
 R_ED1 = ("Extended Data Fig. 1. ", "Decomposition of report-pipeline misses under alternative "
     "definitions and screening models. a, Decomposition of the 55 misses under the primary "
@@ -109,14 +111,14 @@ def set_para(p, text, bold_prefix=None):
 def para_fulltext(p): return "".join(r.text for r in p.runs)
 
 R_PARITY = ("Read directly, the classifier separated urgent from non-urgent studies with an area "
-    "under the receiver operating characteristic curve of 0.949 (95% CI 0.928–0.967; Fig. 1b). The "
-    "report pipeline flagged 34.1% of studies and detected 73.3% of urgent studies. At the same "
-    "flag rate, the classifier detected the same fraction (difference 0.000, 95% CI −0.029 to "
-    "0.030). Equal sensitivity did not mean identical errors. Of the 206 urgent studies, 134 were "
-    "caught by both readouts and 38 by neither, while 17 were caught only by the classifier and 17 "
-    "only by the report. We do not claim that the classifier is superior. The two readouts share an "
-    "encoder yet made different errors, so the misses of the report pipeline cannot be read as "
-    "misses of the encoder.")
+    "under the receiver operating characteristic curve of 0.949 (95% CI 0.928–0.967; Fig. 1b). At "
+    "the report pipeline's flag rate, the two readouts detected the same fraction of urgent studies "
+    "(73.3% each; difference 0.000, 95% CI −0.029 to 0.030) — equivalent sensitivity, which we note "
+    "is not a claim that the classifier is the better triager. They did not, however, make the same "
+    "errors: 17 urgent studies were caught only by the classifier and 17 only by the report "
+    "pipeline, so each readout missed studies the other caught, and generation adds value for some "
+    "findings. Because the two readouts share one encoder yet err differently, the misses of the "
+    "report pipeline cannot be read as failures of the encoder, which we examine next.")
 
 rewrites = [
     ("Read directly, the classifier separated urgent from non-urgent", R_PARITY, None),
