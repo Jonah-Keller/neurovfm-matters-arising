@@ -32,7 +32,17 @@ FILL = {
         "(approximately 0.80 to 0.76)",
     "FUNDING_STATEMENT": "",
     "DATE_SENT_TO_HOLLON": "October 2, 2026",
-    "DECODING_N": "40", "WORD_COUNT": "905",
+    "DECODING_N": "40", "WORD_COUNT": "950",
+    "ABLATION_RESULT": "38 of the 40 decoding misses persisted under each of a “head trauma” and a "
+        "“headache” indication (37 under both), the report pipeline’s sensitivity for urgent studies "
+        "did not improve (0.733 with no indication, 0.728 with head trauma, 0.694 with headache), and "
+        "the classifier’s was unchanged at 0.733",
+    "ED2_ABLATION_SUMMARY": "no indication, 40 decoding, 10 perception and 5 reasoning of 55 misses; "
+        "head trauma, 40 decoding, 10 perception and 6 reasoning of 56; headache, 47 decoding, 11 "
+        "perception and 5 reasoning of 63; 38 of the 40 decoding misses in the main analysis persisted "
+        "under each indication",
+    "DETERMINISM_RESULT": "all 40 reproduced verbatim, confirming the omissions are deterministic "
+        "under the model’s greedy decoding rather than sampling artefacts",
 }
 TEXT_REPLACE = {"October __, 2026": "October 14, 2026",
     "while 17 were caught only by the classifier and 17 only by the report (Fig. 1c).":
