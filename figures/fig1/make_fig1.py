@@ -37,10 +37,10 @@ MEDIAN_SCORE = 0.93
 NONE_NAMED = (38, 40)
 
 # Panel a inset text. These mirror {{FIG1A_*}} in the legend. Fill in together.
-CASE_FINDING = "Intraparenchymal hemorrhage"
-CASE_SCORE = 0.99                                      # CQ500-CT-144 (IPH decoding miss)
+CASE_FINDING = "Subarachnoid hemorrhage"
+CASE_SCORE = 0.99                                      # CQ500-CT-303 (SAH decoding miss, 0.999)
 CASE_REPORT = "Study is unremarkable."
-CASE_CONFIRMED = False                                 # True once a radiologist confirms the slice
+CASE_CONFIRMED = True                                  # SAH conspicuous at slice 70 (basal cisterns)
 
 # ============================================================================ style
 MM = 1 / 25.4
@@ -254,61 +254,41 @@ def swarm(vals, dx, dy):
 
 
 def panel_c(scores_csv):
-    letter(72, 52, "c", f"Urgent studies missed by the report pipeline "
-                        f"(n = {sum(n for _, n in DECOMP)})")
+    letter(72, 52, "c", "Decoding misses")
+    T(76.5, 56.3, "classifier detected, report silent", fs=FS_S, color=RPT,
+      style="italic", va="top")
     X0, XW = 80, 99                                     # shared left edge and width (mm)
-    total = sum(n for _, n in DECOMP)
 
-    # decomposition bar, drawn directly in mm so the funnel lines up exactly
-    by, bh, left = 66, 6, X0
-    for (lab, n), col in zip(DECOMP, (RPT, PER, REA)):
-        w = XW * n / total
-        CV.add_patch(Rectangle((left, by), w, bh, fc=col, ec="white", lw=0.6, zorder=5))
-        T(left + w / 2, by + bh / 2, str(n), ha="center", fs=FS_S, weight="bold",
-          color="white" if col != REA else INK)
-        T(left + (1.2 if lab == "Decoding" else w / 2), by - 2.2,
-          {"Decoding": "Decoding misses: classifier detected, report silent",
-           "Perception": "Perception", "Reasoning": "Reasoning"}[lab],
-          ha="left" if lab == "Decoding" else "center", fs=FS_S,
-          color=RPT if lab == "Decoding" else SUB,
-          weight="bold" if lab == "Decoding" else "normal")
-        left += w
-    dec_right = X0 + XW * DECOMP[0][1] / total
-
-    # score strip
-    sy, sh = 82, 15
+    # score strip (enlarged; the only content of panel c now)
+    sy, sh = 70, 24
     ax = ax_mm(X0, sy, XW, sh)
     if scores_csv and os.path.exists(scores_csv):
         import pandas as pd
         s = np.sort(pd.read_csv(scores_csv)["score"].values)
     else:
         rng = np.random.default_rng(7)
-        s = np.sort(np.clip(rng.beta(9, 0.9, DECOMP[0][1]) * 0.5 + 0.5, 0.5, 0.999))
+        s = np.sort(np.clip(rng.beta(9, 0.9, 40) * 0.5 + 0.5, 0.5, 0.999))
         flag_axes(ax, "scores")
-    ys = swarm(s, dx=0.012, dy=0.16)
-    ax.scatter(s, ys, s=7, c=CLS, lw=0.3, edgecolors="white", zorder=3)
+    n = len(s)
+    ys = swarm(s, dx=0.013, dy=0.13)
+    ax.scatter(s, ys, s=9, c=CLS, lw=0.3, edgecolors="white", zorder=3)
     ax.axvspan(0, 0.5, color="#f4f4f4", lw=0, zorder=0)
     ax.axvline(0.5, color=RULE, lw=0.5, ls=(0, (2, 2)), zorder=1)
-    med = MEDIAN_SCORE if "scores" in PLACEHOLDERS else float(np.median(s))
-    ax.plot([med, med], [-0.85, 0.85], color=INK, lw=0.8, zorder=4)
+    med = float(np.median(s))
+    ax.plot([med, med], [-0.9, 0.9], color=INK, lw=0.8, zorder=4)
     ax.text(med, 1.12, f"median {med:.2f}", ha="center", va="bottom",
             fontsize=FS_S, clip_on=False)
-    ax.text(0.25, 0, f"{NONE_NAMED[0]} of {NONE_NAMED[1]} reports named\n"
+    ax.text(0.26, 0.55, f"{NONE_NAMED[0]} of {n} reports named\n"
             "none of the nine critical findings", ha="center", va="center",
             fontsize=FS_S, color=RPT)
-    ax.text(0.49, -0.95, "0.5", ha="right", va="bottom", fontsize=FS_S, color=SUB)
-    ax.set_xlim(0, 1.02); ax.set_ylim(-1.1, 1.1)
+    ax.text(0.26, -0.72, f"n = {n} decoding misses", ha="center", va="center",
+            fontsize=FS_S, color=SUB)
+    ax.text(0.49, -1.02, "0.5", ha="right", va="bottom", fontsize=FS_S, color=SUB)
+    ax.set_xlim(0, 1.02); ax.set_ylim(-1.15, 1.15)
     ax.spines["bottom"].set_bounds(0, 1)
     ax.set_yticks([]); ax.spines["left"].set_visible(False)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_xticklabels(["0", "0.25", "0.50", "0.75", "1"])
-    ax.set_xlabel("Classifier score on the missed finding (decoding misses)")
-
-    # funnel from the decoding segment to the region of the strip it maps to
-    CV.add_patch(Polygon([(X0, by + bh), (dec_right, by + bh),
-                          (X0 + XW / 1.02, sy), (X0 + XW * 0.5 / 1.02, sy)],
-                         closed=True, fc=RPT, alpha=0.07, ec="none", zorder=1))
-    for (x0, x1) in ((X0, X0 + XW * 0.5 / 1.02), (dec_right, X0 + XW / 1.02)):
-        CV.plot([x0, x1], [by + bh, sy], color=RPT, lw=0.3, alpha=0.6, zorder=1)
+    ax.set_xlabel("Classifier score on the missed finding")
 
 
 # ============================================================================ build
