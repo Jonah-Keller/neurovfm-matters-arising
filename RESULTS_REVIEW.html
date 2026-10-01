@@ -1,0 +1,278 @@
+<style>
+  :root{
+    --ground:#f6f8f9; --surface:#ffffff; --surface-2:#eef2f4;
+    --text:#14202b; --muted:#5a6b78; --faint:#8295a2;
+    --border:#e1e8ec; --border-strong:#cdd8de;
+    --accent:#0e7490; --accent-soft:#0e748015;
+    --strong:#157f57; --strong-bg:#157f5718;
+    --partial:#b5791a; --partial-bg:#b5791a18;
+    --gap:#c33f58; --gap-bg:#c33f5818;
+    --bar-track:#e7edf0;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --ground:#0c1117; --surface:#141c25; --surface-2:#1b2530;
+      --text:#e4ebf1; --muted:#95a6b4; --faint:#6b7d8c;
+      --border:#223040; --border-strong:#2d3f52;
+      --accent:#38bdf8; --accent-soft:#38bdf815;
+      --strong:#3fbe88; --strong-bg:#3fbe8818;
+      --partial:#e0a63e; --partial-bg:#e0a63e18;
+      --gap:#f06b85; --gap-bg:#f06b8518;
+      --bar-track:#1f2b38;
+    }
+  }
+  :root[data-theme="light"]{
+    --ground:#f6f8f9; --surface:#ffffff; --surface-2:#eef2f4;
+    --text:#14202b; --muted:#5a6b78; --faint:#8295a2;
+    --border:#e1e8ec; --border-strong:#cdd8de;
+    --accent:#0e7490; --accent-soft:#0e748015;
+    --strong:#157f57; --strong-bg:#157f5718;
+    --partial:#b5791a; --partial-bg:#b5791a18;
+    --gap:#c33f58; --gap-bg:#c33f5818; --bar-track:#e7edf0;
+  }
+  :root[data-theme="dark"]{
+    --ground:#0c1117; --surface:#141c25; --surface-2:#1b2530;
+    --text:#e4ebf1; --muted:#95a6b4; --faint:#6b7d8c;
+    --border:#223040; --border-strong:#2d3f52;
+    --accent:#38bdf8; --accent-soft:#38bdf815;
+    --strong:#3fbe88; --strong-bg:#3fbe8818;
+    --partial:#e0a63e; --partial-bg:#e0a63e18;
+    --gap:#f06b85; --gap-bg:#f06b8518; --bar-track:#1f2b38;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--text);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased;font-size:15px}
+  .wrap{max-width:1000px;margin:0 auto;padding:40px 24px 80px}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600}
+  h1{font-size:30px;line-height:1.15;margin:.3em 0 .25em;text-wrap:balance;letter-spacing:-.01em}
+  h2{font-size:19px;margin:0 0 2px;letter-spacing:-.01em}
+  .sub{color:var(--muted);max-width:66ch}
+  .lede{font-size:16.5px;color:var(--text);max-width:70ch;margin:14px 0 0}
+  .lede b{color:var(--accent)}
+  header.page{border-bottom:1px solid var(--border);padding-bottom:26px;margin-bottom:30px}
+  .meta{font-family:var(--mono);font-size:12px;color:var(--faint);margin-top:14px;display:flex;gap:18px;flex-wrap:wrap}
+
+  .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:26px 0 0}
+  @media(max-width:720px){.tiles{grid-template-columns:repeat(2,1fr)}}
+  .tile{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px 16px 14px}
+  .tile .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+  .tile .v{font-family:var(--mono);font-size:27px;font-weight:600;letter-spacing:-.02em;
+    margin-top:7px;font-variant-numeric:tabular-nums;line-height:1}
+  .tile .n{font-size:12.5px;color:var(--muted);margin-top:6px}
+  .tile.accent .v{color:var(--accent)} .tile.good .v{color:var(--strong)} .tile.warn .v{color:var(--partial)}
+
+  section{margin-top:40px}
+  .shead{display:flex;align-items:baseline;gap:12px;margin-bottom:14px}
+  .shead .num{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px}
+  .card + .card{margin-top:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  p{margin:0 0 10px} p:last-child{margin-bottom:0}
+  .muted{color:var(--muted)}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--border)}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
+  tr:last-child td{border-bottom:none}
+
+  .bars{display:flex;flex-direction:column;gap:7px;margin-top:4px}
+  .barrow{display:grid;grid-template-columns:150px 1fr 48px;align-items:center;gap:12px}
+  @media(max-width:560px){.barrow{grid-template-columns:120px 1fr 44px}}
+  .barrow .lab{font-size:13px}
+  .track{height:15px;background:var(--bar-track);border-radius:4px;overflow:hidden;position:relative}
+  .fill{height:100%;border-radius:4px}
+  .chance{position:absolute;top:-2px;bottom:-2px;left:50%;width:1.5px;background:var(--faint);opacity:.7}
+  .barrow .val{font-family:var(--mono);font-size:12.5px;text-align:right;font-variant-numeric:tabular-nums}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;
+    letter-spacing:.04em;text-transform:uppercase;padding:2px 8px;border-radius:20px;font-weight:600;white-space:nowrap}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%}
+  .p-done{color:var(--strong);background:var(--strong-bg)} .p-done::before{background:var(--strong)}
+  .p-part{color:var(--partial);background:var(--partial-bg)} .p-part::before{background:var(--partial)}
+  .p-gap{color:var(--gap);background:var(--gap-bg)} .p-gap::before{background:var(--gap)}
+
+  .delta{font-family:var(--mono);font-variant-numeric:tabular-nums}
+  .up{color:var(--strong)} .flat{color:var(--muted)}
+
+  .mlist{display:flex;flex-direction:column;gap:0}
+  .mrow{display:grid;grid-template-columns:42px 1fr auto;gap:12px;align-items:start;padding:11px 0;border-bottom:1px solid var(--border)}
+  .mrow:last-child{border-bottom:none}
+  .mrow .mid{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600;padding-top:1px}
+  .mrow .mt{font-weight:600;font-size:14px} .mrow .md{color:var(--muted);font-size:13px;margin-top:2px}
+
+  .gaps{background:linear-gradient(0deg,var(--gap-bg),transparent);border:1px solid var(--border);
+    border-top:2px solid var(--gap);border-radius:12px;padding:20px 22px}
+  .gaprow{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+  .gaprow:last-child{border-bottom:none}
+  .gaprow .g-t{font-size:13.5px} .gaprow .g-t b{color:var(--text)}
+  .callout{background:var(--accent-soft);border:1px solid var(--border);border-left:3px solid var(--accent);
+    border-radius:8px;padding:14px 16px;margin-top:4px}
+  .callout .big{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--accent);
+    font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--border);color:var(--faint);
+    font-family:var(--mono);font-size:11.5px;line-height:1.7}
+  a{color:var(--accent)}
+</style>
+
+<div class="wrap">
+  <header class="page">
+    <div class="eyebrow">NeuroVFM · results review</div>
+    <h1>Externally validating &amp; improving NeuroVFM's diagnostic head</h1>
+    <p class="lede">The urgent triage misses NeuroVFM attributes to <b>perception</b> are largely a
+      <b>prose-generation</b> failure: when the report goes silent, the diagnostic head is still ~90% confident
+      the finding is present. This page reconciles the <b>original published metrics</b>, <b>our results</b>, and
+      <b>what's still missing</b> — for both the Matters Arising and the standalone paper.</p>
+    <div class="meta">
+      <span>cohort: 490 in-house head CT · 343 report-paired · CQ500 n=472</span>
+      <span>status: analysis in progress</span>
+    </div>
+    <div class="tiles">
+      <div class="tile"><div class="k">Original Path-A (in-domain)</div><div class="v">0.925</div><div class="n">macro-AUROC, 82 CT dx (published)</div></div>
+      <div class="tile accent"><div class="k">Our external validation</div><div class="v">0.82</div><div class="n">mean AUROC, 11 findings, N=343</div></div>
+      <div class="tile good"><div class="k">Silent-miss confidence</div><div class="v">0.90</div><div class="n">median Path-A P(true dx) when prose silent</div></div>
+      <div class="tile warn"><div class="k">Fracture (orig → improved)</div><div class="v">.14→.28</div><div class="n">multi-series/bone-kernel input</div></div>
+    </div>
+  </header>
+
+  <!-- 1 -->
+  <section>
+    <div class="shead"><span class="num">01</span><h2>Original NeuroVFM — published metrics</h2></div>
+    <div class="card">
+      <p class="muted">Kondepudi et al., <i>Nature Medicine</i> 2026. One frozen 3D encoder (Vol-JEPA, ~20k patch tokens) feeds two independent paths that never communicate.</p>
+      <table>
+        <thead><tr><th>Component</th><th>What it does</th><th class="num">Reported</th></tr></thead>
+        <tbody>
+          <tr><td>Path A — diagnostic head</td><td>attentive-MIL → calibrated probs, 82 CT / 74 MRI dx</td><td class="num">0.925 macro-AUROC</td></tr>
+          <tr><td>Path B — findings LLM</td><td>Perceiver (64 latents) → Qwen3-14B → prose</td><td class="num">—</td></tr>
+          <tr><td>Path B — triage</td><td>GPT-5 screener over the prose → acuity</td><td class="num">86.5% sensitivity</td></tr>
+          <tr><td>Urgent misses (prospective)</td><td><b>all 21</b> were cases where the prose was <b>silent</b> — attributed to perception</td><td class="num">21 / 21 silent</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section>
+    <div class="shead"><span class="num">02</span><h2>Our external validation — Path-A vs radiologist reports</h2>
+      <span class="pill p-done">done</span></div>
+    <div class="card">
+      <p class="muted">In-house head CT, N=343 report-paired, report-mined negatives (M4). AUROC vs radiologist-report ground truth. Grey line = chance (0.5); mean ≈ <b>0.82</b> across the 11 well-powered findings vs the 0.925 in-domain figure — a quantified domain-shift gap.</p>
+      <div class="bars">
+        <div class="barrow"><span class="lab">hydrocephalus</span><div class="track"><div class="chance"></div><div class="fill" style="width:96%;background:var(--strong)"></div></div><span class="val">0.96</span></div>
+        <div class="barrow"><span class="lab">ivh</span><div class="track"><div class="chance"></div><div class="fill" style="width:93%;background:var(--strong)"></div></div><span class="val">0.93</span></div>
+        <div class="barrow"><span class="lab">iph</span><div class="track"><div class="chance"></div><div class="fill" style="width:92%;background:var(--strong)"></div></div><span class="val">0.92</span></div>
+        <div class="barrow"><span class="lab">mass effect</span><div class="track"><div class="chance"></div><div class="fill" style="width:86%;background:var(--strong)"></div></div><span class="val">0.86</span></div>
+        <div class="barrow"><span class="lab">sah</span><div class="track"><div class="chance"></div><div class="fill" style="width:83%;background:var(--strong)"></div></div><span class="val">0.83</span></div>
+        <div class="barrow"><span class="lab">any ich</span><div class="track"><div class="chance"></div><div class="fill" style="width:79%;background:var(--accent)"></div></div><span class="val">0.79</span></div>
+        <div class="barrow"><span class="lab">acute infarct</span><div class="track"><div class="chance"></div><div class="fill" style="width:79%;background:var(--accent)"></div></div><span class="val">0.79</span></div>
+        <div class="barrow"><span class="lab">edema</span><div class="track"><div class="chance"></div><div class="fill" style="width:76%;background:var(--accent)"></div></div><span class="val">0.76</span></div>
+        <div class="barrow"><span class="lab">sdh</span><div class="track"><div class="chance"></div><div class="fill" style="width:76%;background:var(--accent)"></div></div><span class="val">0.76</span></div>
+        <div class="barrow"><span class="lab">mass / tumor</span><div class="track"><div class="chance"></div><div class="fill" style="width:73%;background:var(--accent)"></div></div><span class="val">0.73</span></div>
+        <div class="barrow"><span class="lab">midline shift</span><div class="track"><div class="chance"></div><div class="fill" style="width:71%;background:var(--accent)"></div></div><span class="val">0.71</span></div>
+        <div class="barrow"><span class="lab">fracture</span><div class="track"><div class="chance"></div><div class="fill" style="width:14%;background:var(--gap)"></div></div><span class="val">0.14</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section>
+    <div class="shead"><span class="num">03</span><h2>The disagreement audit — the Matters Arising</h2>
+      <span class="pill p-done">done · CQ500</span></div>
+    <div class="card">
+      <div class="callout">
+        <p style="margin-bottom:6px">Among Path-B's <b>prose-silent misses</b> (finding present, triage-urgent, report never mentions it; n=230, 33% of all Path-B false negatives):</p>
+        <span class="big">median P(true dx) = 0.90</span>
+        <p class="muted" style="margin-top:6px">vs <b>0.21</b> when the finding is truly absent · separation AUROC <b>0.86</b> (95% CI 0.84–0.88) · overall 0.94 (0.93–0.95)</p>
+      </div>
+      <p style="margin-top:14px">Reading: <b>when the prose goes silent, the diagnostic head is still ~90% confident the finding is there.</b> The encoder <i>perceived</i> it; the prose path <i>lost</i> it — a direct, quantitative counter to the "perception failure" attribution, and the case for rendering findings <b>from Path A</b>. This is the MA's headline (Figure 1b in the repo).</p>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section>
+    <div class="shead"><span class="num">04</span><h2>Original → Improved — deployment governs perception</h2>
+      <span class="pill p-done">done</span></div>
+    <div class="card">
+      <p class="muted">Multi-series input (M3): feed the encoder the sharp <b>bone-kernel</b> recon alongside the soft-tissue series (329/479 studies had a bone recon). Fracture's bone window of a smooth recon blurs the fracture line.</p>
+      <table>
+        <thead><tr><th>finding</th><th class="num">original</th><th class="num">improved</th><th class="num">Δ</th></tr></thead>
+        <tbody>
+          <tr><td>fracture</td><td class="num">0.14</td><td class="num">0.28</td><td class="num delta up">+0.14</td></tr>
+          <tr><td>mass effect</td><td class="num">0.86</td><td class="num">0.85</td><td class="num delta flat">−0.01</td></tr>
+          <tr><td>sah</td><td class="num">0.83</td><td class="num">0.83</td><td class="num delta flat">0.00</td></tr>
+          <tr><td>any ich</td><td class="num">0.79</td><td class="num">0.80</td><td class="num delta up">+0.01</td></tr>
+          <tr><td>sdh</td><td class="num">0.76</td><td class="num">0.78</td><td class="num delta up">+0.02</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:12px">Per-case the effect is sharp — one occult fracture went <b class="delta up">P 0.01 → 0.80</b> on the bone-kernel series. Cohort-wide fracture only reaches 0.28: honest residual = facial/post-surgical label heterogeneity + only 69% had bone recons + small n. <b>Multi-series input helps bone findings and degrades nothing else.</b></p>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section>
+    <div class="shead"><span class="num">05</span><h2>Methodological contributions</h2></div>
+    <div class="card">
+      <div class="mlist">
+        <div class="mrow"><span class="mid">M1</span><div><div class="mt">Offline, at-scale inference pipeline</div><div class="md">HIPAA-safe, air-gapped, resumable LSF arrays (CPU convert → GPU score). The upstream ships a quickstart, not a cohort recipe.</div></div><span class="pill p-done">done</span></div>
+        <div class="mrow"><span class="mid">M2</span><div><div class="mt">Multi-slice DICOM→NIfTI correctness</div><div class="md">Default load_study treats each .dcm as its own volume — breaks on standard PACS series. We assemble a proper 3-D volume first.</div></div><span class="pill p-done">done</span></div>
+        <div class="mrow"><span class="mid">M3</span><div><div class="mt">Multi-series / bone-kernel input routing</div><div class="md">The perception improvement — route bone findings to the sharp recon. Fracture 0.14→0.28; per-case 0.01→0.80.</div></div><span class="pill p-done">done</span></div>
+        <div class="mrow"><span class="mid">M4</span><div><div class="mt">Negation-mined report negatives</div><div class="md">Evaluation rigor — upgraded "unknown"→neg from report text (sdh +307, sah +281 …), powering per-finding AUROC.</div></div><span class="pill p-done">done</span></div>
+        <div class="mrow"><span class="mid">M5</span><div><div class="mt">17-finding → 82-label crosswalk</div><div class="md">Max-prob over mapped NeuroVFM labels per report finding.</div></div><span class="pill p-done">done</span></div>
+        <div class="mrow"><span class="mid">M6</span><div><div class="mt">Render findings from Path A vs Path-B prose</div><div class="md">The thesis payoff — schema-rendered report recovers Path-B's silent misses. Disagreement done; render-recovery figure pending.</div></div><span class="pill p-part">partial</span></div>
+        <div class="mrow"><span class="mid">M7</span><div><div class="mt">Path-A × anatomy concordance</div><div class="md">Interpretability — does P(hydrocephalus) track measured ventricle volume? Both tables exist; join not run.</div></div><span class="pill p-gap">pending</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section>
+    <div class="shead"><span class="num">06</span><h2>Two-paper plan &amp; figure status</h2></div>
+    <div class="grid2">
+      <div class="card">
+        <p><b>Matters Arising</b> — <i>Nature Medicine</i> · ≤1,200 words</p>
+        <p class="muted" style="font-size:13px">Deployment matters as much as model scale; silent misses are a prose failure; render from Path A.</p>
+        <table style="margin-top:6px">
+          <tr><td>Fig 1a schematic (two paths)</td><td class="num"><span class="pill p-part">draft</span></td></tr>
+          <tr><td>Fig 1b silent-miss confidence</td><td class="num"><span class="pill p-done">done</span></td></tr>
+          <tr><td>Fig 1c render-vs-prose recovery</td><td class="num"><span class="pill p-gap">pending</span></td></tr>
+          <tr><td>ED1–3 (example, dial, per-finding)</td><td class="num"><span class="pill p-gap">pending</span></td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <p><b>Standalone</b> — <i>Radiology: AI</i> / AJNR</p>
+        <p class="muted" style="font-size:13px">External validation + input-conditioned perception + deployable pipeline + anatomy anchoring.</p>
+        <table style="margin-top:6px">
+          <tr><td>Fig 1 external AUROC</td><td class="num"><span class="pill p-done">done</span></td></tr>
+          <tr><td>Fig 2 original vs improved</td><td class="num"><span class="pill p-part">data in</span></td></tr>
+          <tr><td>Fig 3 Path-A × anatomy</td><td class="num"><span class="pill p-gap">pending</span></td></tr>
+          <tr><td>Fig 4 pipeline schematic</td><td class="num"><span class="pill p-gap">pending</span></td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section>
+    <div class="shead"><span class="num">07</span><h2>What we're missing</h2>
+      <span class="pill p-gap">open</span></div>
+    <div class="gaps">
+      <div class="gaprow"><div class="g-t"><b>Render-vs-prose recovery number (M6 / Fig 1c)</b> — run phase3_render: at a chosen threshold, what fraction of Path-B silent misses does the schema recover? <span class="muted">This is the MA's second half and the "prose schema beats free-text" claim.</span></div><span class="pill p-gap">next</span></div>
+      <div class="gaprow"><div class="g-t"><b>Path-B prose on the in-house cohort</b> — CQ500 has it; in-house doesn't. Needed to repeat the disagreement result on our own data.</div><span class="pill p-gap">GPU</span></div>
+      <div class="gaprow"><div class="g-t"><b>Anatomy concordance (M7 / Fig 3)</b> — join Path-A probs with TotalSegmentator volumes. Zero-GPU; both tables on disk.</div><span class="pill p-part">cheap</span></div>
+      <div class="gaprow"><div class="g-t"><b>Bootstrap 95% CIs</b> on every in-house AUROC (Fig 1 currently point estimates).</div><span class="pill p-part">cheap</span></div>
+      <div class="gaprow"><div class="g-t"><b>Fracture label disambiguation</b> — separate skull-vault from facial/orbital/post-surgical to clean the 0.28.</div><span class="pill p-gap">label</span></div>
+      <div class="gaprow"><div class="g-t"><b>RADAR redelivery</b> — +1,458 head CT (export was truncated at a token cutoff) ~triples the cohort and tightens every CI.</div><span class="pill p-gap">external</span></div>
+      <div class="gaprow"><div class="g-t"><b>Fig 2b example images</b> — render the occult-vs-bone-kernel fracture pair (0.01→0.80) for the figure.</div><span class="pill p-part">cheap</span></div>
+    </div>
+  </section>
+
+  <footer>
+    NeuroVFM results review · de-identified aggregate metrics only (no PHI, no raw imaging, no re-identification key).<br>
+    In-house: 490 head CT (343 report-paired) · CQ500: 472 studies (public). Generated for manuscript review.
+  </footer>
+</div>
