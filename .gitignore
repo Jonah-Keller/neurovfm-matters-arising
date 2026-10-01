@@ -1,0 +1,4 @@
+figures/*.png
+data_deid/*raw*
+__pycache__/
+*.pyc
