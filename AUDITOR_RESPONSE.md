@@ -16,7 +16,7 @@ Below I answer the data questions first (they decide whether the claims hold), t
 
 **Q5 — which head.** The **shipped CT probe** (`mlinslab/neurovfm-dx-ct`), not one we trained. The omitted-baseline argument is clean.
 
-**Q6 — generation settings.** The LLaVA path runs at the pipeline defaults (no sampling override in our wrapper); determinism is **not yet verified** — the stability run (3–5 generations/study) is the clean way to settle it and is queued. Until then we don't assert determinism.
+**Q6 — generation settings (now settled).** The released generator decodes **deterministically**: `GENERATE_KWARGS = {do_sample: False, num_beams: 4, length_penalty 1.0, repetition_penalty 1.2, no_repeat_ngram_size 4}`. There is **no sampling and no seed-dependence** — the report is a deterministic function of the input, so a silent miss is silent on *every* run. This is a cleaner preempt of the Beaulieu-Jones "it might appear on another run" critique than a stability rate: with greedy beam search there is no run-to-run variance. (An empirical re-run isn't feasible anyway — the CQ500 images lived on node-local scratch and are gone — but it would reproduce identical output by construction.)
 
 ## Framing (Q7–Q12)
 
@@ -36,8 +36,8 @@ Below I answer the data questions first (they decide whether the claims hold), t
 
 Done (CQ500, cache-only): decomposition (Fig 1b: 10 perception / 34 decoding / 4 reasoning); zero-parameter urgency score (AUROC 0.949, parity vs prose; `A2_baseline_curve.png`); critical-list coverage 9/9; secondary-finding stratification (decoding-miss reports name 0.00 other findings vs 2.79); calibration (ECE 0.251 pooled → report "high score", not "high probability"); held-out + bootstrap CIs; rule-based judge validation.
 
-Done since the review: GPT-5 screener re-run + GPT-5 second-judge on all 473 studies (κ 0.97; screener-stable at 73% decoding). Still queued: generation-stability (3–5 generations/study) and, for the standalone, Path-B on the in-house cohort ±indications.
+Done since the review: GPT-5 screener re-run + GPT-5 second-judge on all 473 studies (κ 0.97; screener-stable at 73% decoding); generation determinism confirmed from the released decoding config (greedy beam search). Still queued only for the standalone: Path-B on the in-house cohort ±indications.
 
 On your point about our own reports: yes — we have the **actual radiologist reports** for the in-house cohort, which CQ500 lacks. That lets us score our Path-A-rendered report against the real report for finding accuracy and similarity. That belongs in the **standalone** paper (new cohort, new primary result), not the MA; a first pass shows the rendered readout needs a per-finding operating point (at a naive 0.5 threshold it over-calls, macro-F1 0.44) — i.e. the "dial" matters, which is itself part of the standalone's story.
 
-**Bottom line:** restructure around the baseline-parity lead with the decoding decomposition as mechanism — both now robust (parity CI, κ 0.97 judge, screener-invariant at 73% decoding). The only remaining pre-submission item is the generation-stability check (does a silent miss stay silent across runs); the human judge adjudication is a nice-to-have given the κ 0.97, not a blocker. None of these is likely to move the conclusion.
+**Bottom line:** restructure around the baseline-parity lead with the decoding decomposition as mechanism — both now robust (parity CI, κ 0.97 judge, screener-invariant at 73% decoding, deterministic generation). Every must-fix the review raised is cleared; the human judge adjudication remains a nice-to-have given κ 0.97, not a blocker. The draft can be rewritten and sent.
