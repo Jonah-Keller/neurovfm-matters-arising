@@ -108,7 +108,18 @@ def set_para(p, text, bold_prefix=None):
 
 def para_fulltext(p): return "".join(r.text for r in p.runs)
 
+R_PARITY = ("Read directly, the classifier separated urgent from non-urgent studies with an area "
+    "under the receiver operating characteristic curve of 0.949 (95% CI 0.928–0.967; Fig. 1b). The "
+    "report pipeline flagged 34.1% of studies and detected 73.3% of urgent studies. At the same "
+    "flag rate, the classifier detected the same fraction (difference 0.000, 95% CI −0.029 to "
+    "0.030). Equal sensitivity did not mean identical errors. Of the 206 urgent studies, 134 were "
+    "caught by both readouts and 38 by neither, while 17 were caught only by the classifier and 17 "
+    "only by the report. We do not claim that the classifier is superior. The two readouts share an "
+    "encoder yet made different errors, so the misses of the report pipeline cannot be read as "
+    "misses of the encoder.")
+
 rewrites = [
+    ("Read directly, the classifier separated urgent from non-urgent", R_PARITY, None),
     ("The misses of the report pipeline show where information", R_MAIN, None),
     ("Each urgent study was classified as detected or missed", R_METHODS, None),
     ("NeuroVFM’s diagnostic classifier detects most urgent", R_FIG1[1], R_FIG1[0]),
