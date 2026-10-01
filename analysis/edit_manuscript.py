@@ -23,9 +23,13 @@ FILL = {
     "ED3_CASE_DESCRIPTIONS": "The examples span subarachnoid hemorrhage, intraparenchymal "
         "hemorrhage, subdural hematoma, intracranial hemorrhage, calvarial fracture and mass "
         "effect; in each the classifier scored the finding above 0.96 while the report read as normal.",
-    "COVERAGE_SUPP2D": "all nine of the critical findings analysed here; of a broader "
-        "neuroradiology critical-findings list (ref. 6), cerebral venous sinus thrombosis was the "
-        "only commonly listed urgent finding without a corresponding NeuroVFM label",
+    "COVERAGE_SUPP2D": "all head-CT-assessable critical findings on the list (16 of its 40 "
+        "entries, including hemorrhage, acute stroke, herniation, hydrocephalus, mass effect, "
+        "edema, aneurysm, arteriovenous malformation, venous sinus thrombosis, vascular dissection "
+        "and occlusion, skull fracture, pneumocephalus, abscess and foreign body); the remaining "
+        "entries are spinal or soft-tissue findings outside the scope of a non-contrast head CT",
+    "THEIR_ED9D_INDICATION_EFFECT": "a small reduction in NeuroVFM’s three-tier acuity accuracy "
+        "(approximately 0.80 to 0.76)",
     "FUNDING_STATEMENT": "",
     "DATE_SENT_TO_HOLLON": "October 2, 2026",
     "DECODING_N": "40", "WORD_COUNT": "905",
