@@ -14,7 +14,10 @@ On the author/affiliation/corresponding changes: fine as set — Dr. Srinivasan 
 - Of those misses, diagnostic-head score > 0.5 on a critical label: **43 / 48 = 89.6%**.
 "Most" = **~90%**. The attribution claim is well supported and could lead — but see Q7.
 
-**Q2 — The +0.039 result.** Recomputed here as **urgent-study sensitivity at a matched flag rate** (study-level, not finding-level): prose pipeline sits at sens **0.767 @ flag-rate 0.375**; the zero-parameter head score at the same flag rate gives sens **0.801**, i.e. **Δ +0.034** (my run; the +0.039 in the draft is likely a slightly different flag-rate match — reconcile to one definition). Urgency-score **AUROC 0.949**. **Caveats that must be fixed before this is defensible:** (i) the threshold/operating point is **swept in-sample**, not chosen on a held-out split — we need a train/test or cross-validated split; (ii) **no CI yet** — I owe a bootstrap 95% CI over studies. Until both are done, state it as a provisional point estimate.
+**Q2 — The +0.039 result. Now with held-out threshold + bootstrap CI, and the honest verdict is PARITY, not a win.** Metric = **urgent-study sensitivity at a matched flag rate** (study-level). In-sample point: prose **0.767 @ flag-rate 0.375** vs zero-param **0.801** (Δ **+0.034**). But under scrutiny the sensitivity edge evaporates:
+- **Held-out (5-fold CV, threshold chosen on train):** Δsens = **+0.020 ± 0.125** (folds −0.167, +0.025, +0.116, −0.061, +0.184 — two negative).
+- **Bootstrap (2000×, over studies):** Δsens **95% CI [−0.009, +0.065] — crosses zero.**
+So **do not claim the head *beats* the pipeline on sensitivity** — it doesn't, significantly. What IS robust is the **discrimination**: zero-param **AUROC 0.949, 95% CI [0.928, 0.968]**. The defensible claim is therefore *non-inferiority / parity*: **a single calibrated head, with no LLM, triages as well as the entire prose+screener pipeline.** That is still a strong result (and the reviewer explicitly said the baseline lead must survive a parity result — it does). Drop the "+0.034 beats it" language everywhere.
 
 **Q3 — How "mentioned" was decided.** The prose-hit judge is an **LLM (Claude)**, file `prose_hit_claude.jsonl`. It has **not** been validated against human review. This is a real gap and, given the Beaulieu-Jones precedent, a likely central reviewer complaint. Mitigation is the hand-review of ~100 reports (analysis below) — not yet done.
 
@@ -31,7 +34,7 @@ On the author/affiliation/corresponding changes: fine as set — Dr. Srinivasan 
 ## Part 2 — framing (Q7–Q12)
 
 **Q7 — Lead concern. Recommendation: lead with the missing baseline, support with attribution.** Both are strong here, so we don't have to choose blind:
-- *Missing baseline* (reviewer's lean, and mine): the head's own score, with **no LLM**, triages at **AUROC 0.949** and **beats the full prose pipeline by +0.034 sensitivity at matched flag rate**. This carries the task-fit thesis and survives a parity result.
+- *Missing baseline* (reviewer's lean, and mine): the head's own score, with **no LLM**, triages at **AUROC 0.949 [0.928–0.968]** — **statistically indistinguishable from the full prose+screener pipeline on sensitivity** (bootstrap Δ CI crosses zero). Frame as *parity / non-inferiority at a fraction of the compute*, not "beats." This is the task-fit thesis and it survives exactly the parity result the review anticipated.
 - *Attribution* is unusually lopsided and makes the mechanism paragraph: of 48 misses, **71% are decoding** (encoder confident, prose silent), 21% perception, 8% screener — see Q/A1 below.
 Lead baseline → mechanism (attribution) → one-paragraph generalization.
 
@@ -51,7 +54,7 @@ Lead baseline → mechanism (attribution) → one-paragraph generalization.
 
 **Done (cache-only, no GPU):**
 - **A1 — decomposition (Fig 1b):** 48 misses = **10 perception (21%) / 34 decoding (71%) / 4 reasoning (8%)**. Parallels their 21/155. → `A1_decomposition.csv`.
-- **A2 — zero-parameter urgency score (the panel):** AUROC 0.949; +0.034 sens vs prose at matched flag rate. → `A2_baseline_curve.png`, `A2_sens_vs_flagrate.csv`.
+- **A2 — zero-parameter urgency score (the panel):** AUROC **0.949 [0.928–0.968]**; sensitivity **at parity** with the prose pipeline (held-out Δ +0.020±0.125; bootstrap Δ CI [−0.009,+0.065] crosses zero). Claim = non-inferiority at a fraction of the compute. → `A2_baseline_curve.png`, `reviewer_ci2.py`.
 - **A3 — critical-list coverage:** all **9/9** CQ500 urgent findings map to ≥1 of the 82 labels. (ASNR ref-17 full-list mapping still to do — needs the enumerated list.)
 - **A4 — secondary-finding stratification:** decoding-miss reports name **0.00** other findings vs **2.79** for correctly-reported — the decoder emits globally negative prose, not "concise summaries dropping a secondary." Strengthens the mechanism.
 - **A5 — calibration (CQ500):** pooled **ECE 0.251** — the head **discriminates** well externally but is **not calibrated**. ⇒ phrase as "high *score*" (rank), **not** "high *probability*." Per-finding reliability + temperature scaling to follow.
@@ -65,4 +68,6 @@ Lead baseline → mechanism (attribution) → one-paragraph generalization.
 - **Perceiver bottleneck probe (A9) / decoder log-likelihood (A10):** localizes the loss (compression vs decoder). Ambitious; optional.
 - **Fracture AUROC < 0.5 (standalone only):** resolved in principle — soft-tissue 0.14 → multi-series 0.28; residual is label heterogeneity (facial/post-surgical coded as "fracture") + smooth-recon input. **Fracture is excluded from the MA entirely**; it only appears in the standalone after a vault-only relabel.
 
-**Bottom line:** the data support leading with the **missing baseline** (AUROC 0.949, +0.034 over prose) and using the **71%-decoding decomposition** (median head score 0.93 on silent, neurosurgically-urgent findings) as the mechanism. The three must-fix items before submission: GPT-5 screener re-run, a held-out/bootstrapped operating point, and judge-vs-human validation.
+**Bottom line:** lead with the **missing baseline as a parity result** — a single calibrated head matches the entire prose+screener pipeline on triage (AUROC 0.949 [0.928–0.968]; sensitivity statistically indistinguishable) at a fraction of the compute — and carry the mechanism with the **71%-decoding decomposition** (median head score 0.93 on silent, neurosurgically-urgent findings; 34/34 silent-miss reports name 0/9 findings). The sensitivity *win* does not survive (bootstrap CI crosses zero) — claim parity, not superiority.
+
+**Must-fix status:** ✅ held-out + bootstrap CI (done — forced the parity reframe). ✅ screener-faithfulness (settled analytically: empty reports are screener-proof; exact GPT-5 confirmation of the miss count still wants an OpenAI key). ◻️ judge-vs-human validation (the ~100-report hand review — still outstanding).
