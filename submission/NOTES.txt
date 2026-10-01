@@ -3,8 +3,12 @@ Status: COMPLETE except one pending result.
 
 Fully filled: all analysis numbers (GPT-5 primary), parity (AUROC 0.949, Δsens 0.000),
 decomposition (finding-specific primary: 40 decoding / 10 perception / 5 reasoning),
-Fig. 1 (4-panel), cover letter (dates, 905 words), coverage (16/16 head-CT critical
-findings vs Babiarz ref 6), and the authors' ED Fig. 9d indication effect (0.80->0.76).
+Fig. 1 (3-panel: one-encoder-two-readouts schematic; triage curve for each readout;
+strip of the 40 decoding misses), Extended Data Fig. 1 (decomposition under the
+alternative definition and the Claude screener, decoding misses by finding, normal-
+report fraction, judge agreement), cover letter (dates, 905 words), coverage (16/16
+head-CT critical findings vs Babiarz ref 6), and the authors' ED Fig. 9d indication
+effect (0.80->0.76).
 
 Remaining — ONE token, auto-completing (GPU indication ablation, ETA ~2 h from 2026-10-01):
   {{ABLATION_RESULT}}, {{ED2_ABLATION_SUMMARY}}  (head-trauma + headache reruns)
@@ -12,4 +16,5 @@ Remaining — ONE token, auto-completing (GPU indication ablation, ETA ~2 h from
 These appear in the manuscript main text (one sentence), ED Fig. 2a legend, and Methods.
 An updated package will be pushed once the run finishes.
 
-Files: manuscript.docx, figures.docx (legends), cover_letter.docx, Figure_1.pdf/.png
+Files: manuscript.docx, figures.docx (legends), cover_letter.docx,
+       Figure_1.pdf/.png, Extended_Data_Fig_1.pdf/.png
