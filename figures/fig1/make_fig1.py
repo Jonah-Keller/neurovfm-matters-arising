@@ -203,7 +203,7 @@ def synthetic_curve():
 
 def panel_b(curve_csv):
     letter(0, 52, "b", "Triage by each readout")
-    ax = ax_mm(13, 60, 47, 40)
+    ax = ax_mm(12, 62, 34, 36)
     if curve_csv and os.path.exists(curve_csv):
         import pandas as pd
         d = pd.read_csv(curve_csv).sort_values("flag_rate")
@@ -253,13 +253,39 @@ def swarm(vals, dx, dy):
     return np.array(ys)
 
 
-def panel_c(scores_csv):
-    letter(72, 52, "c", "Decoding misses")
-    T(76.5, 56.3, "classifier detected, report silent", fs=FS_S, color=RPT,
-      style="italic", va="top")
-    X0, XW = 80, 99                                     # shared left edge and width (mm)
+def panel_c():
+    letter(50, 52, "c", "Where the readouts disagree")
+    x0, y0, cw, ch = 60, 66, 14, 11                     # grid origin + cell size (mm)
+    val = {(0, 0): "134", (0, 1): "17", (1, 0): "17", (1, 1): "38"}
+    fillc = {(0, 0): "#b7adea", (0, 1): CLS_FILL, (1, 0): RPT_FILL, (1, 1): "#ededea"}
+    edgec = {(0, 0): "#5a4fcf", (0, 1): CLS, (1, 0): RPT, (1, 1): PER}
+    for ri in (0, 1):
+        for ci in (0, 1):
+            x, y = x0 + ci * cw, y0 + ri * ch
+            CV.add_patch(Rectangle((x, y), cw, ch, fc=fillc[(ri, ci)], ec=edgec[(ri, ci)],
+                                   lw=LW, zorder=4))
+            T(x + cw / 2, y + ch / 2, val[(ri, ci)], ha="center", va="center",
+              fs=FS_T, weight="bold", color=edgec[(ri, ci)])
+    # column headers (report)
+    T(x0 + cw, y0 - 3.4, "Report", ha="center", fs=FS_S, color=RPT, weight="bold")
+    T(x0 + cw / 2, y0 - 1.2, "flag", ha="center", fs=FS_S, color=SUB)
+    T(x0 + cw + cw / 2, y0 - 1.2, "miss", ha="center", fs=FS_S, color=SUB)
+    # row headers (classifier)
+    T(x0 - 3.4, y0 + ch, "Classifier", ha="center", fs=FS_S, color=CLS, weight="bold",
+      rotation=90, va="center")
+    T(x0 - 1.0, y0 + ch / 2, "flag", ha="right", fs=FS_S, color=SUB)
+    T(x0 - 1.0, y0 + ch + ch / 2, "miss", ha="right", fs=FS_S, color=SUB)
+    T(x0 + cw, y0 + 2 * ch + 3.0, "206 urgent studies at the matched flag rate",
+      ha="center", fs=FS_S, color=SUB, style="italic")
 
-    # score strip (enlarged; the only content of panel c now)
+
+def panel_d(scores_csv):
+    letter(94, 52, "d", "Decoding misses")
+    T(98.5, 56.3, "classifier detected, report silent", fs=FS_S, color=RPT,
+      style="italic", va="top")
+    X0, XW = 102, 77                                    # shared left edge and width (mm)
+
+    # score strip
     sy, sh = 70, 24
     ax = ax_mm(X0, sy, XW, sh)
     if scores_csv and os.path.exists(scores_csv):
@@ -274,9 +300,12 @@ def panel_c(scores_csv):
     ax.scatter(s, ys, s=9, c=CLS, lw=0.3, edgecolors="white", zorder=3)
     ax.axvspan(0, 0.5, color="#f4f4f4", lw=0, zorder=0)
     ax.axvline(0.5, color=RULE, lw=0.5, ls=(0, (2, 2)), zorder=1)
+    ax.axvline(0.98, color=INK, lw=0.7, zorder=1)
+    ax.text(0.99, 1.12, "matched 0.98", ha="left", va="bottom", fontsize=FS_S - 0.5,
+            color=INK, clip_on=False)
     med = float(np.median(s))
     ax.plot([med, med], [-0.9, 0.9], color=INK, lw=0.8, zorder=4)
-    ax.text(med, 1.12, f"median {med:.2f}", ha="center", va="bottom",
+    ax.text(med - 0.012, 1.12, f"median {med:.2f}", ha="right", va="bottom",
             fontsize=FS_S, clip_on=False)
     ax.text(0.26, 0.55, f"{NONE_NAMED[0]} of {n} reports named\n"
             "none of the nine critical findings", ha="center", va="center",
@@ -301,7 +330,8 @@ def main():
 
     panel_a(a.case)
     panel_b(a.curve)
-    panel_c(a.scores)
+    panel_c()
+    panel_d(a.scores)
     if PLACEHOLDERS:
         T(W - 1, H - 1.2, "PLACEHOLDER: " + ", ".join(PLACEHOLDERS), ha="right",
           va="bottom", fs=FS_S, color="#c99a00", weight="bold")
