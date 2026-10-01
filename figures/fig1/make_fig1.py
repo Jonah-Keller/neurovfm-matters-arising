@@ -277,58 +277,31 @@ def panel_c():
       ha="center", fs=FS_S, color=SUB, style="italic")
 
 
-LIGHT = "#9ec3e6"                                      # classifier score >0.5 but not flagged
-
-
 def panel_d(scores_csv):
-    # one strip of all 55 report misses; letter only, no title (legend explains)
+    # one strip of the 40 decoding misses; letter only, legend carries the explanation
     letter(66, 52, "c", "")
-    X0, XW, sy, sh = 72, 103, 64, 30                    # strip box (mm); ~30 mm tall
+    X0, XW, sy, sh = 72, 103, 64, 30                    # strip box (mm)
     ax = ax_mm(X0, sy, XW, sh)
-    mp = "misses_55.csv"
-    if scores_csv:
-        cand = os.path.join(os.path.dirname(scores_csv), "misses_55.csv")
-        if os.path.exists(cand): mp = cand
-    if os.path.exists(mp):
+    if scores_csv and os.path.exists(scores_csv):
         import pandas as pd
-        df = pd.read_csv(mp)
-        score = df["score"].to_numpy(float)
-        tobool = lambda c: df[c].astype(str).str.strip().str.lower().isin(["true", "1"]).to_numpy()
-        rea, flg = tobool("reasoning"), tobool("flagged")
+        s = pd.read_csv(scores_csv)["score"].to_numpy(float)
     else:
         rng = np.random.default_rng(7)
-        score = np.concatenate([np.clip(rng.beta(9, .9, 40) * .5 + .5, .5, .999),
-                                rng.uniform(0.05, 0.5, 10), rng.uniform(.4, .99, 5)])
-        rea = np.array([False] * 50 + [True] * 5)
-        flg = (score >= 0.976) & ~rea
-        flag_axes(ax, "misses")
+        s = np.clip(rng.beta(9, 0.9, 40) * 0.5 + 0.5, 0.5, 0.999)
+        flag_axes(ax, "scores")
 
-    y = swarm(score, dx=0.022, dy=0.17)
-    groups = [(~rea & flg, CLS), (~rea & ~flg & (score > 0.5), LIGHT), (~rea & (score <= 0.5), PER)]
-    for m, c in groups:
-        ax.scatter(score[m], y[m], s=9, c=c, lw=0.3, edgecolors="white", zorder=3)
-    ax.scatter(score[rea], y[rea], s=12, facecolors="none", edgecolors=RPT, linewidths=0.8, zorder=4)
+    y = swarm(s, dx=0.02, dy=0.16)
+    ax.scatter(s, y, s=11, c=CLS, lw=0.3, edgecolors="white", zorder=3)
     ax.axvline(0.5, color=RULE, lw=0.5, ls=(0, (2, 2)), zorder=1)
 
     ytop, ybot = float(y.max()), float(y.min())
-    hi = ~rea & (score > 0.5); lo = ~rea & (score <= 0.5)
-    n_flag, n_hi, n_lo, n_rea = int((~rea & flg).sum()), int(hi.sum()), int(lo.sum()), int(rea.sum())
-    hitop = float(y[hi].max()) if hi.any() else ytop
-    lotop = float(y[lo].max()) if lo.any() else ytop
-    ax.text(0.80, hitop + 0.35, f"report silent, classifier > 0.5  ({n_hi})\n"
-            f"{n_flag} flagged at the matched alarm rate", ha="center", va="bottom",
-            fontsize=FS_S, color=CLS, linespacing=1.25)
-    ax.text(0.25, lotop + 0.35, f"report silent,\nclassifier ≤ 0.5  ({n_lo})",
-            ha="center", va="bottom", fontsize=FS_S, color=SUB, linespacing=1.25)
-    med = float(np.median(score[hi]))
+    med = float(np.median(s))
     ax.plot([med, med], [ybot - 0.3, ybot - 0.85], color=INK, lw=0.9, zorder=4)
     ax.text(med, ybot - 1.02, f"median {med:.2f}", ha="center", va="top", fontsize=FS_S)
-    ax.scatter([0.03], [ybot - 1.4], s=12, facecolors="none", edgecolors=RPT,
-               linewidths=0.8, zorder=4, clip_on=False)
-    ax.text(0.06, ybot - 1.4, f"report named the finding ({n_rea})", ha="left", va="center",
-            fontsize=FS_S, color=RPT)
+    ax.text(0.5, ytop + 0.5, f"{len(s)} findings the report missed but the classifier scored",
+            ha="center", va="bottom", fontsize=FS_S, color=CLS)
 
-    ax.set_xlim(0, 1); ax.set_ylim(ybot - 1.75, ytop + 1.3)
+    ax.set_xlim(0, 1); ax.set_ylim(ybot - 1.45, ytop + 1.35)
     ax.set_yticks([]); ax.spines["left"].set_visible(False)
     ax.spines["bottom"].set_bounds(0, 1)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_xticklabels(["0", "0.25", "0.50", "0.75", "1"])
