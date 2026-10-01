@@ -203,7 +203,7 @@ def synthetic_curve():
 
 def panel_b(curve_csv):
     letter(0, 52, "b", "Triage by each readout")
-    ax = ax_mm(12, 62, 34, 36)
+    ax = ax_mm(13, 60, 44, 40)
     if curve_csv and os.path.exists(curve_csv):
         import pandas as pd
         d = pd.read_csv(curve_csv).sort_values("flag_rate")
@@ -228,10 +228,12 @@ def panel_b(curve_csv):
                 xytext=(PROSE_FLAG + 12, PROSE_SENS - 16), fontsize=FS_S, color=RPT,
                 weight="bold", va="center",
                 arrowprops=dict(arrowstyle="-", lw=0.3, color=RPT, shrinkB=2.5))
-    ax.text(98, 28, f"AUROC {AUROC:.3f} ({AUROC_CI[0]:.3f}–{AUROC_CI[1]:.3f})\n"
-            f"Δ sensitivity at matched rate\n{DSENS:.1f} points "
-            f"(−{abs(DSENS_CI[0]):.1f} to {DSENS_CI[1]:.1f})",
-            ha="right", va="bottom", fontsize=FS_S, color=INK, linespacing=1.35)
+    ax.text(99, 30, f"AUROC {AUROC:.3f}\n({AUROC_CI[0]:.3f}–{AUROC_CI[1]:.3f})",
+            ha="right", va="bottom", fontsize=FS, color=CLS, weight="bold", linespacing=1.2)
+    ax.text(99, 15, "matches the report pipeline's\nsensitivity at the same flag rate\n"
+            f"(Δ {DSENS:.1f} pp, 95% CI "
+            f"{DSENS_CI[0]:.1f} to +{DSENS_CI[1]:.1f})",
+            ha="right", va="bottom", fontsize=FS_S, color=SUB, linespacing=1.3)
 
     ax.set_xlim(0, 100); ax.set_ylim(0, 100)
     ax.set_xticks([0, 25, 50, 75, 100]); ax.set_yticks([0, 25, 50, 75, 100])
@@ -280,10 +282,10 @@ def panel_c():
 
 
 def panel_d(scores_csv):
-    letter(94, 52, "d", "Decoding misses")
-    T(98.5, 56.3, "classifier detected, report silent", fs=FS_S, color=RPT,
+    letter(66, 52, "c", "Decoding misses")
+    T(70.5, 56.3, "report said normal — but the classifier saw it", fs=FS_S, color=RPT,
       style="italic", va="top")
-    X0, XW = 102, 77                                    # shared left edge and width (mm)
+    X0, XW = 72, 103                                    # shared left edge and width (mm)
 
     # score strip
     sy, sh = 70, 24
@@ -300,9 +302,6 @@ def panel_d(scores_csv):
     ax.scatter(s, ys, s=9, c=CLS, lw=0.3, edgecolors="white", zorder=3)
     ax.axvspan(0, 0.5, color="#f4f4f4", lw=0, zorder=0)
     ax.axvline(0.5, color=RULE, lw=0.5, ls=(0, (2, 2)), zorder=1)
-    ax.axvline(0.98, color=INK, lw=0.7, zorder=1)
-    ax.text(0.99, 1.12, "matched 0.98", ha="left", va="bottom", fontsize=FS_S - 0.5,
-            color=INK, clip_on=False)
     med = float(np.median(s))
     ax.plot([med, med], [-0.9, 0.9], color=INK, lw=0.8, zorder=4)
     ax.text(med - 0.012, 1.12, f"median {med:.2f}", ha="right", va="bottom",
@@ -330,8 +329,7 @@ def main():
 
     panel_a(a.case)
     panel_b(a.curve)
-    panel_c()
-    panel_d(a.scores)
+    panel_d(a.scores)   # decoding-miss strip, now panel c (2x2 dropped — read as a wash)
     if PLACEHOLDERS:
         T(W - 1, H - 1.2, "PLACEHOLDER: " + ", ".join(PLACEHOLDERS), ha="right",
           va="bottom", fs=FS_S, color="#c99a00", weight="bold")

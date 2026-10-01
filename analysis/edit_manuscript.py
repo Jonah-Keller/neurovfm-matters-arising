@@ -34,14 +34,17 @@ FILL = {
     "DATE_SENT_TO_HOLLON": "October 2, 2026",
     "DECODING_N": "40", "WORD_COUNT": "905",
 }
-TEXT_REPLACE = {"October __, 2026": "October 14, 2026"}
+TEXT_REPLACE = {"October __, 2026": "October 14, 2026",
+    "while 17 were caught only by the classifier and 17 only by the report (Fig. 1c).":
+        "while 17 were caught only by the classifier and 17 only by the report.",
+    "missed by both readouts (Fig. 1d).": "missed by both readouts."}
 
 # ---- full paragraph rewrites (match by unique prefix) -> (new_text, bold_prefix_or_None) ----
 R_MAIN = ("The misses of the report pipeline show where information was lost. Of the 55 urgent "
     "studies it missed, 5 had a report that named a critical finding that GPT-5 did not escalate. "
     "Of the remainder, in 40 the classifier scored the missed finding above 0.5 (median 0.92) while "
-    "the report named none of the study’s critical findings, and in 10 the classifier also scored "
-    "the finding at or below 0.5. Most of these silent reports read as explicitly normal, for "
+    "the report named none of the study’s critical findings (Fig. 1c), and in 10 the classifier also "
+    "scored the finding at or below 0.5. Most of these silent reports read as explicitly normal, for "
     "example, “Study is unremarkable.” They were complete outputs rather than truncated or empty "
     "generations, and the language model had received the same bone window as the classifier. The "
     "omitted findings included calvarial fracture, intraparenchymal hemorrhage, subdural hematoma "
@@ -75,16 +78,12 @@ R_FIG1 = ("Fig. 1. ", "NeuroVFM’s diagnostic classifier detects most urgent fi
     "classifier’s highest score across the nine critical findings used directly as a triage score, "
     "with 95% CI (AUROC 0.949, 95% CI 0.928–0.967). Orange point, the report pipeline (sensitivity "
     "0.733 at a flag rate of 0.341). Blue point, the classifier at the same flag rate, a threshold "
-    "chosen without labels. The difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
-    "Agreement between the two readouts on the 206 urgent studies at the matched flag rate: caught "
-    "by both (134), by the classifier only (17), by the report only (17) or by neither (38). d, "
-    "Classifier score on the missed finding for each of the 55 urgent studies the report pipeline "
-    "missed. Dotted line, 0.5 (the primary decoding threshold); solid line, the matched triage "
-    "threshold (0.98). Filled blue markers, decoding misses, in which the classifier scored the "
-    "missed finding above 0.5 while the report named none of the study’s critical findings (n = 40). "
-    "Grey markers, perception misses, in which that score was 0.5 or below (n = 10). Open markers, "
-    "reasoning misses, in which the report named a critical finding that GPT-5 did not escalate "
-    "(n = 5). Confidence intervals are from 2,000 study-level bootstrap resamples.")
+    "chosen without labels; the difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
+    "Classifier score on the missed finding for the 40 decoding misses — urgent studies the report "
+    "pipeline missed in which the classifier scored the finding above 0.5 while the report named "
+    "none of the study’s critical findings. Dotted line, 0.5; the median score was 0.92, and in 38 "
+    "of the 40 the report named none of the nine critical findings. Confidence intervals in b are "
+    "from 2,000 study-level bootstrap resamples.")
 
 R_ED1 = ("Extended Data Fig. 1. ", "Decomposition of report-pipeline misses under alternative "
     "definitions and screening models. a, Decomposition of the 55 misses under the primary "
