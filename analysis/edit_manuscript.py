@@ -23,7 +23,14 @@ FILL = {
     "ED3_CASE_DESCRIPTIONS": "The examples span subarachnoid hemorrhage, intraparenchymal "
         "hemorrhage, subdural hematoma, intracranial hemorrhage, calvarial fracture and mass "
         "effect; in each the classifier scored the finding above 0.96 while the report read as normal.",
+    "COVERAGE_SUPP2D": "all nine of the critical findings analysed here; of a broader "
+        "neuroradiology critical-findings list (ref. 6), cerebral venous sinus thrombosis was the "
+        "only commonly listed urgent finding without a corresponding NeuroVFM label",
+    "FUNDING_STATEMENT": "",
+    "DATE_SENT_TO_HOLLON": "October 2, 2026",
+    "DECODING_N": "40", "WORD_COUNT": "905",
 }
+TEXT_REPLACE = {"October __, 2026": "October 14, 2026"}
 
 # ---- full paragraph rewrites (match by unique prefix) -> (new_text, bold_prefix_or_None) ----
 R_MAIN = ("The misses of the report pipeline show where information was lost. Of the 55 urgent "
@@ -110,15 +117,17 @@ for p in d.paragraphs:
     for key, newtext, bold in rewrites:
         if key in ft and key not in done_rw:
             set_para(p, newtext, bold); done_rw.add(key)
-# token fills
+# token fills + literal text replacements (run-level)
 for p in d.paragraphs:
     for r in p.runs:
         for tok, val in FILL.items():
             s = "{{" + tok + "}}"
             if s in r.text: r.text = r.text.replace(s, val)
+        for a, b in TEXT_REPLACE.items():
+            if a in r.text: r.text = r.text.replace(a, b)
 d.save(out)
 import re, zipfile
 rem = sorted(set(re.findall(r"\{\{([A-Z0-9_]+)\}\}", zipfile.ZipFile(out).read("word/document.xml").decode("utf-8","ignore"))))
-print("rewrote:", sorted(done_rw.__len__() and [k for k,_,_ in rewrites if k in done_rw]))
+print("rewrote:", sorted(done_rw))
 print("STILL PENDING:", rem)
 print("saved", out)
