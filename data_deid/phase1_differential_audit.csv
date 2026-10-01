@@ -1,0 +1,15 @@
+finding,urgent,head_scoreable,n_gt_pos,prose_mentioned,prose_coverage,n_prose_silent,n_silent_head_confident,silent_head_median_prob
+ich,True,True,205,141,0.688,64,41,0.73
+iph,True,True,134,71,0.53,63,45,0.906
+masseffect,True,True,127,102,0.803,25,17,0.879
+midlineshift,True,True,65,58,0.892,7,4,0.978
+sah,True,True,60,23,0.383,37,30,0.963
+sdh,True,True,53,37,0.698,16,12,0.883
+calvarialfracture,True,True,34,7,0.206,27,24,0.923
+ivh,True,True,28,18,0.643,10,8,0.997
+edh,True,True,13,1,0.077,12,11,0.931
+bleedlocation-left,False,False,131,0,0.0,131,0,
+bleedlocation-right,False,False,129,0,0.0,129,0,
+fracture,False,True,39,0,0.0,39,34,0.953
+chronicbleed,False,False,19,0,0.0,19,0,
+otherfracture,False,True,12,4,0.333,8,5,0.925

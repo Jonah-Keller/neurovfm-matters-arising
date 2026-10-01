@@ -1,0 +1,24 @@
+{
+  "n_studies": 472,
+  "n_gt_urgent": 206,
+  "arm_a_sensitivity": 0.0,
+  "arm_b_sensitivity": 0.9757281553398058,
+  "n_arm_a_false_neg": 206,
+  "disagreement_rate": 0.6800847457627118,
+  "n_fn_true_dx_points": 688,
+  "fn_true_dx_median_prob": 0.9854266047477722,
+  "tn_null_median_prob": 0.20850203931331635,
+  "separation_all": {
+    "auroc": 0.9404,
+    "ci_lo": 0.931,
+    "ci_hi": 0.949
+  },
+  "n_fn_prose_silent": 230,
+  "frac_fn_prose_silent": 0.33430232558139533,
+  "silent_median_prob": 0.9012272655963898,
+  "separation_prose_silent": {
+    "auroc": 0.862,
+    "ci_lo": 0.8393,
+    "ci_hi": 0.8825
+  }
+}
