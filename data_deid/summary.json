@@ -1,0 +1,30 @@
+{
+ "A0": {
+  "urgent": 206,
+  "missed": 48,
+  "missed_pa_high": 43
+ },
+ "A1": {
+  "perception": 10,
+  "decoding": 34,
+  "reasoning": 4
+ },
+ "A2": {
+  "auroc": 0.9488466311409592,
+  "prose_sens": 0.7669902912621359,
+  "prose_flagrate": 0.375,
+  "zp_sens_matched": 0.8009708737864077,
+  "delta": 0.03398058252427183
+ },
+ "A3": {
+  "covered": 9,
+  "total": 9
+ },
+ "A4": {
+  "decoding_mean_other": 0.0,
+  "correct_mean_other": 2.787671232876712
+ },
+ "A5": {
+  "ece": 0.2508983014360767
+ }
+}

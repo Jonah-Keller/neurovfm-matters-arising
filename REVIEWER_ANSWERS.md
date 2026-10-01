@@ -1,0 +1,68 @@
+# Answers to the review — data, framing, and analyses
+
+*All numbers from the CQ500 cached mirror (472 studies joined to consensus; public data). Scripts: `neurovfm_triage_audit/analysis/reviewer_suite.py`, outputs in `outputs/reviewer_suite/`. Caveats are called out, not buried.*
+
+On the author/affiliation/corresponding changes: fine as set — Dr. Srinivasan as corresponding (visishs@upenn.edu), both Neurosurgery/Penn, his signature on the cover letter. No objection; keep it his.
+
+---
+
+## Part 1 — what the data currently show (Q1–Q6)
+
+**Q1 — Study-level counts on CQ500.**
+- Urgent studies (consensus-positive for any of the 9 urgent findings): **206 / 472**.
+- Missed by the prose→screener triage: **48** (23.3% of urgent).
+- Of those misses, diagnostic-head score > 0.5 on a critical label: **43 / 48 = 89.6%**.
+"Most" = **~90%**. The attribution claim is well supported and could lead — but see Q7.
+
+**Q2 — The +0.039 result.** Recomputed here as **urgent-study sensitivity at a matched flag rate** (study-level, not finding-level): prose pipeline sits at sens **0.767 @ flag-rate 0.375**; the zero-parameter head score at the same flag rate gives sens **0.801**, i.e. **Δ +0.034** (my run; the +0.039 in the draft is likely a slightly different flag-rate match — reconcile to one definition). Urgency-score **AUROC 0.949**. **Caveats that must be fixed before this is defensible:** (i) the threshold/operating point is **swept in-sample**, not chosen on a held-out split — we need a train/test or cross-validated split; (ii) **no CI yet** — I owe a bootstrap 95% CI over studies. Until both are done, state it as a provisional point estimate.
+
+**Q3 — How "mentioned" was decided.** The prose-hit judge is an **LLM (Claude)**, file `prose_hit_claude.jsonl`. It has **not** been validated against human review. This is a real gap and, given the Beaulieu-Jones precedent, a likely central reviewer complaint. Mitigation is the hand-review of ~100 reports (analysis below) — not yet done.
+
+**Q4 — Faithfulness to the published pipeline.** Mixed; disclose explicitly.
+- Prose generation: the **released NeuroVFM-LLaVA weights** (`mlinslab/neurovfm-llm`) via the shipped `FindingsGenerationPipeline` — faithful.
+- Screener: **Claude**, not **GPT-5-thinking** with their prompt (the cache is `acuity_claude.jsonl`). A GPT-5 path exists in `wrappers.py` (`gpt-5-2025-08-07`) but did **not** build this cache. **The text must state the screener substitution and argue why it shouldn't matter** (ideally re-run the screener with GPT-5 to show the decomposition is screener-invariant — cheap, API-only).
+
+**Q5 — Which diagnostic head.** The **shipped CT probe** (`mlinslab/neurovfm-dx-ct`), not a probe we trained. The "omitted baseline" argument is clean.
+
+**Q6 — Generation settings.** The LLaVA path uses `generator.generate(...)` with the **pipeline defaults** (no sampling override in our wrapper). **Determinism is not yet verified** — needs the stability run (analysis below). Until then, don't assert determinism.
+
+---
+
+## Part 2 — framing (Q7–Q12)
+
+**Q7 — Lead concern. Recommendation: lead with the missing baseline, support with attribution.** Both are strong here, so we don't have to choose blind:
+- *Missing baseline* (reviewer's lean, and mine): the head's own score, with **no LLM**, triages at **AUROC 0.949** and **beats the full prose pipeline by +0.034 sensitivity at matched flag rate**. This carries the task-fit thesis and survives a parity result.
+- *Attribution* is unusually lopsided and makes the mechanism paragraph: of 48 misses, **71% are decoding** (encoder confident, prose silent), 21% perception, 8% screener — see Q/A1 below.
+Lead baseline → mechanism (attribution) → one-paragraph generalization.
+
+**Q8 — How far to generalize.** Agree: keep the broad "match the tool to the task" argument to the **closing paragraph**, mirroring the two published MAs. Threading it throughout is riskier and invites scope objections.
+
+**Q9 — Where prose genuinely helps (honest concession).** Four places the head cannot cover: (i) findings **outside the 82-label ontology**; (ii) **incidental / extracranial** findings; (iii) **laterality, size, location** nuance; (iv) **synthesis** across findings into a narrative. Name these as the legitimate role of generation — the argument is *render the calibrated core from the head, let prose augment*, not *replace*.
+
+**Q10 — Clinical stake (for Dr. Srinivasan to sharpen).** The decoding misses are exactly the neurosurgically urgent set: of 34, **IPH 8, ICH 6, calvarial fracture 6, mass effect 5, SDH 4, SAH 3, EDH 2** — median head score on the missed finding **0.93** (min 0.56). And in **34/34** the report named **zero** of the nine findings — a globally negative report while the encoder was confident. The clinical teeth write themselves: a confident IPH/SDH/SAH read silently dropped into a normal-sounding report is the exact failure that reaches a neurosurgeon too late.
+
+**Q11 — What to hold for the standalone.** Keep the structured/calibrated-readout generalization to **one paragraph** in the MA; hold the full external validation (0.82 mean AUROC), the input-conditioned perception result, pipeline, and chart-structuring thesis for the standalone. (Note MA confidentiality binds the original authors but not editors/reviewers.)
+
+**Q12 — Timing with Dr. Hollon.** Open — your call. The decision-critical analyses (Q1–Q5 + zero-parameter score) are now done, so the draft can be restructured and sent whenever you're ready; the two-week clock starts then.
+
+---
+
+## Part 3 — analyses (status)
+
+**Done (cache-only, no GPU):**
+- **A1 — decomposition (Fig 1b):** 48 misses = **10 perception (21%) / 34 decoding (71%) / 4 reasoning (8%)**. Parallels their 21/155. → `A1_decomposition.csv`.
+- **A2 — zero-parameter urgency score (the panel):** AUROC 0.949; +0.034 sens vs prose at matched flag rate. → `A2_baseline_curve.png`, `A2_sens_vs_flagrate.csv`.
+- **A3 — critical-list coverage:** all **9/9** CQ500 urgent findings map to ≥1 of the 82 labels. (ASNR ref-17 full-list mapping still to do — needs the enumerated list.)
+- **A4 — secondary-finding stratification:** decoding-miss reports name **0.00** other findings vs **2.79** for correctly-reported — the decoder emits globally negative prose, not "concise summaries dropping a secondary." Strengthens the mechanism.
+- **A5 — calibration (CQ500):** pooled **ECE 0.251** — the head **discriminates** well externally but is **not calibrated**. ⇒ phrase as "high *score*" (rank), **not** "high *probability*." Per-finding reliability + temperature scaling to follow.
+
+**Pending / honest gaps:**
+- **Judge validation (Q3):** hand-review ~100 reports vs the Claude judge — manual, ~an afternoon; not done.
+- **GPT-5 screener re-run (Q4):** cheap, API-only; show the decomposition is screener-invariant.
+- **Held-out threshold + bootstrap CI (Q2):** required before the +0.034 is quotable.
+- **In-house Path-B, ±indications (A7):** GPU; resolves the indication confound — most likely demanded in review. Launch-ready.
+- **Generation stability (A8):** 3–5 generations/study; confirms a silent miss stays silent (Q6).
+- **Perceiver bottleneck probe (A9) / decoder log-likelihood (A10):** localizes the loss (compression vs decoder). Ambitious; optional.
+- **Fracture AUROC < 0.5 (standalone only):** resolved in principle — soft-tissue 0.14 → multi-series 0.28; residual is label heterogeneity (facial/post-surgical coded as "fracture") + smooth-recon input. **Fracture is excluded from the MA entirely**; it only appears in the standalone after a vault-only relabel.
+
+**Bottom line:** the data support leading with the **missing baseline** (AUROC 0.949, +0.034 over prose) and using the **71%-decoding decomposition** (median head score 0.93 on silent, neurosurgically-urgent findings) as the mechanism. The three must-fix items before submission: GPT-5 screener re-run, a held-out/bootstrapped operating point, and judge-vs-human validation.

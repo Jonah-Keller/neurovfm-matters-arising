@@ -1,0 +1,64 @@
+I updated the three files so the authors are you and Dr. Srinivasan, both under the Department of Neurosurgery at Penn, with him as corresponding author at visishs@upenn.edu, matching the glioma template. I also switched the cover letter signature block to his, since that template letter came from him. Tell me if you'd rather sign it yourself.
+
+Here is where I'd like your input. I've grouped the questions by what they decide, then listed the analyses I'd like you to run.
+
+## Questions about what the data currently show
+
+These decide whether the claims in the draft are true as written.
+
+1. **Study-level counts on CQ500.** In your triage mirror, how many urgent studies were there, how many did the prose pipeline miss, and of those misses, how many had a diagnostic-head score above threshold? Your earlier note said "most" of the misses. The exact proportion decides whether attribution can be the lead.
+
+2. **The +0.039 result.** What exactly was the metric? Was it urgent-study sensitivity at a matched flag rate, or something at the finding level? What was its confidence interval? Was the threshold chosen on data held out from the evaluation?
+
+3. **How "mentioned" was decided.** Your notes say prose hits were LLM-judged. Has anyone checked that judge against human review? A reviewer will ask, given that the Beaulieu-Jones piece made judge validity a central complaint.
+
+4. **Faithfulness to the published pipeline.** Did you run the released NeuroVFM-LLaVA weights yourselves? Which screener did you use? If it wasn't GPT-5-thinking with their prompt, the authors can say your mirror isn't their pipeline. In that case, the text needs to say what substitution you made and why it shouldn't matter.
+
+5. **Which diagnostic head.** Were the scores from the shipped CT probe, or from a probe you trained? The "omitted baseline" argument only works cleanly if you used what they released.
+
+6. **Generation settings.** What decoding settings did the LLaVA path use, and is the output deterministic? If sampling is involved, a finding that goes silent on one run may appear on another. That cuts both ways for your argument.
+
+## Questions about framing
+
+7. **Lead concern.** Do you want to lead with attribution (the misses are decoding failures) or with the missing baseline (the model's own head was never compared on the triage task)? My lean is the missing baseline, because it carries your task-fit thesis and survives a parity result. Attribution is the stronger evidence, though, if the decomposition numbers are lopsided.
+
+8. **How far to generalize.** Both published examples stay tightly on the original paper and generalize only in their final paragraph. Are you comfortable keeping the broader argument about matching the tool to the task to one closing paragraph? The alternative is threading it throughout, which is riskier.
+
+9. **Where prose genuinely helps.** Where do you think generated prose adds something the head cannot? Candidates include findings outside the ontology, incidental findings, laterality, and size. Naming this honestly makes the critique more credible, and it tells us which concession to write.
+
+10. **The clinical stake.** Which omitted findings matter most to a neurosurgeon or neurointerventionalist? Dr. Srinivasan's perspective could give the mechanism paragraph its clinical teeth. For example, a small subdural beside a large parenchymal hemorrhage, intraventricular extension, early hydrocephalus, or a hyperdense vessel sign in a patient with large vessel occlusion.
+
+11. **What to save for the standalone paper.** The structured, calibrated readout idea connects to your broader chart-structuring thesis. How much of that generalization do you want in the MA, and how much do you want to hold for the full paper? Remember that the original authors are bound to confidentiality on MA content, but the editors and reviewers will see it.
+
+12. **Timing with Dr. Hollon.** Has the draft gone to him yet? If not, the analyses below determine when it can, and the two-week clock starts then.
+
+## Analyses I'd like you to run
+
+These are ordered roughly by how much each one changes the argument relative to its cost.
+
+**Cheap, from outputs you already have**
+
+- **Study-level decomposition on CQ500.** Classify every urgent miss as a perception, decoding or reasoning miss. This is Fig. 1b and directly parallels their 21 of 155.
+- **A zero-parameter urgency score.** For each study, take the maximum diagnostic-head score across the labels that map to the critical-findings list. Use it directly as a triage score, with no LLM screener, and plot its sensitivity against flag rate next to the prose pipeline's single point. This is your VaxSeer-style simplest adequate baseline, and it may be the most persuasive panel in the paper.
+- **Critical-list coverage.** Map the ASNR critical findings list (their ref. 17) onto the 82 CT labels and report what fraction is covered. This needs no GPU and defines the scope of the claim.
+- **Secondary-finding stratification.** For decoding misses versus correctly reported urgent findings, compare how often the report named another abnormality. This tests the concise-summary mechanism.
+- **Calibration of external scores.** Make reliability diagrams for the head on CQ500 and on the in-house cohort. This lets you say "high score" with confidence, or tells you not to.
+- **Judge validation.** Hand-review about 100 reports for whether each reference finding was mentioned, and compute agreement with the LLM judge. You could do this yourself in an afternoon.
+
+**Moderate, requiring GPU time**
+
+- **Path-B prose on the in-house cohort, with and without indications.** Running both conditions resolves the indication confound and measures how much indications change the silent-miss rate. This is the analysis most likely to be demanded in review.
+- **Generation stability.** Generate three to five reports per study on a representative subset. Report how often a silent miss stays silent across runs. This preempts the Beaulieu-Jones style of critique.
+
+**More ambitious, but it would localize the failure**
+
+- **A Perceiver bottleneck probe.** Train a simple linear probe for the critical labels on the 64 Perceiver latents, and compare it with the same probe on the full encoder tokens. If the information survives the Perceiver, the loss is in the language decoder. If it doesn't, the loss is in compression. Either answer sharpens the mechanism paragraph.
+- **Decoder likelihood of the missing finding.** Under teacher forcing, compute the log-probability the decoder assigns to the omitted finding's text, given the visual tokens. If the decoder considers the finding likely but omits it, the failure lies in the concise-output training objective rather than in what the decoder knows. This is optional and elegant, but it is the first thing to drop if time is short.
+
+**Not for the MA, but needed before the standalone paper**
+
+- **The fracture AUROC below 0.5.** Please resolve this before any fracture number appears anywhere.
+
+If you can send back answers to questions 1 through 5 and the results of the zero-parameter urgency score, I think we'll know which lead to choose and can restructure the draft around it.
+
+The updated manuscript, cover letter, figures file and token key are above. The only changes are the author block, affiliation, corresponding email and the cover letter signature. The text will be restructured once we settle the lead concern.
