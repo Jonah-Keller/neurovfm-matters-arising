@@ -278,23 +278,21 @@ def panel_c():
 
 
 def panel_d(scores_csv):
-    letter(66, 52, "c", "What the report missed, the classifier had scored")
+    letter(66, 52, "c", "Decoding misses")
     X0, XW = 72, 103                                    # shared left edge and width (mm)
-    # 55 report-pipeline misses: 40 the classifier had scored above 0.5 (blue) + 15 other (grey)
-    by, bh, total, nblue = 62, 6, 55, 40
+    # bar: 40 decoding (report missed, classifier detected) + 15 other (grey)
+    by, bh, total, nblue = 64, 6, 55, 40
     w40 = XW * nblue / total
-    CV.add_patch(Rectangle((X0, by), w40, bh, fc=CLS, ec="white", lw=0.6, zorder=5))
+    CV.add_patch(Rectangle((X0, by), w40, bh, fc=RPT, ec="white", lw=0.6, zorder=5))
     T(X0 + w40 / 2, by + bh / 2, str(nblue), ha="center", va="center", fs=FS_T,
       weight="bold", color="white")
     CV.add_patch(Rectangle((X0 + w40, by), XW - w40, bh, fc="#e7e7e7", ec="white", lw=0.6, zorder=5))
     T(X0 + w40 + (XW - w40) / 2, by + bh / 2, str(total - nblue), ha="center", va="center",
       fs=FS_S, color=SUB)
-    T(X0 + XW, by - 1.4, "55 urgent studies the report pipeline missed", ha="right",
-      fs=FS_S, color=SUB)
-    T(X0 + w40 / 2, by + bh + 2.5, "in 40, the classifier had already scored the finding",
-      ha="center", fs=FS_S, color=CLS, weight="bold")
+    T(X0 + 1.5, by - 2.0, "classifier detected the finding, report silent",
+      ha="left", fs=FS_S, color=RPT, weight="bold")
     # decoding-score strip
-    sy, sh = 81, 17
+    sy, sh = 82, 16
     ax = ax_mm(X0, sy, XW, sh)
     if scores_csv and os.path.exists(scores_csv):
         import pandas as pd
@@ -323,12 +321,12 @@ def panel_d(scores_csv):
     ax.set_yticks([]); ax.spines["left"].set_visible(False)
     ax.set_xticks([0, 0.25, 0.5, 0.75, 1]); ax.set_xticklabels(["0", "0.25", "0.50", "0.75", "1"])
     ax.set_xlabel("Classifier score on the missed finding")
-    # funnel: the blue (40) bar segment drops to its scores (the >0.5 region of the strip)
+    # funnel: the decoding (40) bar segment drops to its scores (the >0.5 region of the strip)
     sx0, sx1 = X0 + XW * 0.49, X0 + XW
     CV.add_patch(Polygon([(X0, by + bh), (X0 + w40, by + bh), (sx1, sy), (sx0, sy)],
-                         closed=True, fc=CLS, alpha=0.06, ec="none", zorder=0))
+                         closed=True, fc=RPT, alpha=0.07, ec="none", zorder=0))
     for a2, b2 in ((X0, sx0), (X0 + w40, sx1)):
-        CV.plot([a2, b2], [by + bh, sy], color=CLS, lw=0.3, alpha=0.5, zorder=0)
+        CV.plot([a2, b2], [by + bh, sy], color=RPT, lw=0.3, alpha=0.6, zorder=0)
 
 
 # ============================================================================ build

@@ -78,7 +78,7 @@ R_FIG1 = ("Fig. 1. ", "NeuroVFM’s diagnostic classifier detects most urgent fi
     "with 95% CI (AUROC 0.949, 95% CI 0.928–0.967). Orange point, the report pipeline (sensitivity "
     "0.733 at a flag rate of 0.341). Blue point, the classifier at the same flag rate, a threshold "
     "chosen without labels; the difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
-    "Of the 55 urgent studies the report pipeline missed, in 40 (blue) the classifier had already "
+    "Of the 55 urgent studies the report pipeline missed, in 40 the classifier had already "
     "scored the missed finding above 0.5 while the report named none of the study’s critical "
     "findings; lines connect this group to their classifier scores below (dotted line, 0.5; median "
     "0.92). In 38 of the 40 the report named none of the nine critical findings. The full "
