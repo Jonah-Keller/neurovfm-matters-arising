@@ -78,12 +78,12 @@ R_FIG1 = ("Fig. 1. ", "NeuroVFM’s diagnostic classifier detects most urgent fi
     "with 95% CI (AUROC 0.949, 95% CI 0.928–0.967). Orange point, the report pipeline (sensitivity "
     "0.733 at a flag rate of 0.341). Blue point, the classifier at the same flag rate, a threshold "
     "chosen without labels; the difference in sensitivity was 0.000 (95% CI −0.029 to 0.030). c, "
-    "Of the 55 urgent studies the report pipeline missed, in 40 the classifier had already "
-    "scored the missed finding above 0.5 while the report named none of the study’s critical "
-    "findings; lines connect this group to their classifier scores below (dotted line, 0.5; median "
-    "0.92). In 38 of the 40 the report named none of the nine critical findings. The full "
-    "decomposition of the 55 misses is in Extended Data Fig. 1. Confidence intervals in b are from "
-    "2,000 study-level bootstrap resamples.")
+    "Classifier score for the missed finding in each of the 55 urgent studies the report pipeline "
+    "missed (dotted line, 0.5). Filled blue, flagged by the classifier at the matched alarm rate; "
+    "light blue, score above 0.5 but not flagged; grey, score of 0.5 or below; open orange, the "
+    "report named the finding but GPT-5 did not escalate it. Tick, the median score (0.92) among "
+    "silent reports scoring above 0.5. The full decomposition of the 55 misses is in Extended Data "
+    "Fig. 1. Confidence intervals in b are from 2,000 study-level bootstrap resamples.")
 
 R_ED1 = ("Extended Data Fig. 1. ", "Decomposition of report-pipeline misses under alternative "
     "definitions and screening models. a, Decomposition of the 55 misses under the primary "
