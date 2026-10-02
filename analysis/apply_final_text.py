@@ -6,7 +6,7 @@ Bold for headings and run-in leads; ("IMG", path, width_in) embeds a centred pic
 Usage: apply_final_text.py <template_dir> <out_dir> <figures_dir>
 """
 import sys, docx
-from docx.shared import Inches
+from docx.shared import Inches, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 TPL, OUT = sys.argv[1], sys.argv[2]
@@ -291,13 +291,15 @@ def figures_items():
         it += [("L", lead, rest), ("B", "")]
     return it
 
-def build(template, out, items):
+def build(template, out, items, double=True):
     d = docx.Document(template)
     for p in list(d.paragraphs):
         p._element.getparent().remove(p._element)
     for item in items:
         if item[0] == "IMG":
             p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            pf = p.paragraph_format; pf.line_spacing = 1.0
+            pf.space_before = Pt(6); pf.space_after = Pt(6)
             p.add_run().add_picture(item[1], width=Inches(item[2]))
             continue
         p = d.add_paragraph()
@@ -308,6 +310,9 @@ def build(template, out, items):
         elif item[0] == "L":
             rb = p.add_run(item[1]); rb.bold = True
             p.add_run(item[2])
+        pf = p.paragraph_format
+        pf.line_spacing = 2.0 if double else 1.0        # double-spaced manuscript
+        pf.space_after = Pt(0)
     d.save(out)
     wc = sum(len((i[1] + (i[2] if i[0] == "L" else "")).split())
              for i in items if i[0] in ("H", "B", "L"))

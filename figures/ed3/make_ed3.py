@@ -103,13 +103,13 @@ def main():
         iax.bar(range(9), vals, color=cols, lw=0, width=0.8)
         iax.axhline(0.5, color="#aaa", lw=0.4, ls=(0, (2, 2)))
         iax.set_ylim(0, 1); iax.set_xticks(range(9))
-        iax.set_xticklabels([SHORT[ff] for ff in ORDER], fontsize=4.2)
-        iax.set_yticks([0, 1]); iax.tick_params(length=1.5, labelsize=4.2)
+        iax.set_xticklabels([SHORT[ff] for ff in ORDER], fontsize=4.4, rotation=90)
+        iax.set_yticks([0, 1]); iax.tick_params(length=1.5, labelsize=4.4)
         for sp in ("top", "right"): iax.spines[sp].set_visible(False)
         print(f"rendered {f} {name} slice {k}/{vol.shape[0]}", flush=True)
     fig.suptitle("Representative decoding misses: classifier detected the finding, report read normal",
                  fontsize=7, y=0.99)
-    fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.16, wspace=0.08, hspace=1.10)
+    fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.20, wspace=0.08, hspace=1.15)
     exts = ["png", "svg"] + (["pdf"] if a.pdf else [])
     for e in exts:
         fig.savefig(f"{a.out}.{e}", dpi=600 if e == "png" else None, facecolor="white")
