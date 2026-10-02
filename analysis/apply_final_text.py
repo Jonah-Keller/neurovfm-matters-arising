@@ -1,12 +1,18 @@
 #!/usr/bin/env python
 """Rebuild manuscript.docx and figures.docx from the author's final merged text
-(verbatim; Unicode superscripts kept as-is). Preserves the template's Normal style
-by clearing its paragraphs and re-adding. Bold for headings and run-in leads.
-Usage: apply_final_text.py <template_dir> <out_dir>
+(verbatim; Unicode superscripts kept as-is), with the rendered figures embedded.
+Preserves the template's Normal style by clearing its paragraphs and re-adding.
+Bold for headings and run-in leads; ("IMG", path, width_in) embeds a centred picture.
+Usage: apply_final_text.py <template_dir> <out_dir> <figures_dir>
 """
 import sys, docx
+from docx.shared import Inches
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 TPL, OUT = sys.argv[1], sys.argv[2]
+FIG = sys.argv[3] if len(sys.argv) > 3 else None
+IMG = {"fig1": f"{FIG}/fig1/fig1.png", "ed1": f"{FIG}/ed1/ed1.png",
+       "ed2": f"{FIG}/ed2/ed2.png", "ed3": f"{FIG}/ed3/ed3.png"} if FIG else {}
 
 # ("H", text)=full-bold heading ; ("B", text)=body ; ("L", lead, rest)=bold lead + body
 SUP = {}  # superscripts are provided inline as Unicode glyphs (¹²³…)
@@ -73,7 +79,7 @@ MAIN = [
 "reassures and moves the scan down the worklist.",
 
 "Several checks support this reading. The language model did not simply call everything normal, "
-"describing 96% of non-urgent studies as normal but only 23% of urgent ones. The results were "
+"describing 96% of non-urgent studies as normal but only 24% of urgent ones. The results were "
 "similar with a different screening model (Claude) and with a second judge of whether each finding "
 "was mentioned (agreement κ = 0.97). Because the authors’ screening rules do not escalate some "
 "findings¹,⁶, we repeated the analysis without the four studies whose only critical finding was a "
@@ -146,7 +152,7 @@ LEGENDS = [
 "rate). Acuity agreement between the two screeners was 96.6%. c, Decoding misses by critical finding "
 "with the 0.5 score (calvarial fracture 9, intraparenchymal hemorrhage 8, intracranial hemorrhage "
 "8, subdural hematoma 5, mass effect 5, subarachnoid hemorrhage 3, epidural hematoma 2). d, Fraction "
-"of generated reports reading as normal among urgent (23%) and non-urgent (96%) studies. e, "
+"of generated reports reading as normal among urgent (24%) and non-urgent (96%) studies. e, "
 "Agreement on whether each reference finding was mentioned, between GPT-5 and Claude as judges (mean "
 "κ 0.97) and between each judge and a rule-based detector (κ 0.92 or higher for hemorrhage "
 "findings)."),
@@ -261,7 +267,11 @@ def manuscript_items():
            ("H", "Main Text")]
     it += [("B", p) for p in MAIN]
     it += [("H", "References")] + [("B", r) for r in REFS]
-    it += [("H", "Figure Legends")] + [("L", a, b) for a, b in LEGENDS]
+    it += [("H", "Figure Legends")]
+    keys = ["fig1", "ed1", "ed2", "ed3"]
+    for k, (a, b) in zip(keys, LEGENDS):
+        if k in IMG: it.append(("IMG", IMG[k], 6.5))
+        it.append(("L", a, b))
     it += [("H", "Methods")] + [("L", a, b) for a, b in METHODS]
     it += [("H", "Acknowledgements"),
            ("B", "We thank the authors of ref. 1 for releasing the NeuroVFM code and weights, and the creators of CQ500 for making their data public."),
@@ -273,10 +283,12 @@ def manuscript_items():
 
 def figures_items():
     it = [("H", "Figures")]
+    keys = ["fig1", "ed1", "ed2", "ed3"]
     labels = ["[Insert Figure 1 here]", "[Insert Extended Data Figure 1 here]",
               "[Insert Extended Data Figure 2 here]", "[Insert Extended Data Figure 3 here]"]
-    for lab, (lead, rest) in zip(labels, LEGENDS):
-        it += [("B", lab), ("L", lead, rest), ("B", "")]
+    for k, lab, (lead, rest) in zip(keys, labels, LEGENDS):
+        it.append(("IMG", IMG[k], 6.5) if k in IMG else ("B", lab))
+        it += [("L", lead, rest), ("B", "")]
     return it
 
 def build(template, out, items):
@@ -284,6 +296,10 @@ def build(template, out, items):
     for p in list(d.paragraphs):
         p._element.getparent().remove(p._element)
     for item in items:
+        if item[0] == "IMG":
+            p = d.add_paragraph(); p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.add_run().add_picture(item[1], width=Inches(item[2]))
+            continue
         p = d.add_paragraph()
         if item[0] == "H":
             r = p.add_run(item[1]); r.bold = True
@@ -293,7 +309,8 @@ def build(template, out, items):
             rb = p.add_run(item[1]); rb.bold = True
             p.add_run(item[2])
     d.save(out)
-    wc = sum(len(p[1].split()) if p[0] != "L" else len((p[1] + p[2]).split()) for p in items)
+    wc = sum(len((i[1] + (i[2] if i[0] == "L" else "")).split())
+             for i in items if i[0] in ("H", "B", "L"))
     return wc
 
 mwc = build(f"{TPL}/NeuroVFM_Matters_Arising_manuscript.docx",

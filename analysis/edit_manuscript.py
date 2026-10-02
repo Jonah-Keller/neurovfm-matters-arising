@@ -32,7 +32,7 @@ FILL = {
         "(approximately 0.80 to 0.76)",
     "FUNDING_STATEMENT": "",
     "DATE_SENT_TO_HOLLON": "October 2, 2026",
-    "DECODING_N": "40", "WORD_COUNT": "950",
+    "DECODING_N": "40", "WORD_COUNT": "1045",
     "ABLATION_RESULT": "38 of the 40 decoding misses persisted under each of a “head trauma” and a "
         "“headache” indication (37 under both), the report pipeline’s sensitivity for urgent studies "
         "did not improve (0.733 with no indication, 0.728 with head trauma, 0.694 with headache), and "

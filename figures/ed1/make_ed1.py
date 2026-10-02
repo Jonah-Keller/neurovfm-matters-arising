@@ -85,9 +85,20 @@ def compute():
         a = [bool(G[s].get("mentioned", {}).get(f)) for s in both]
         b = [bool(CM.get(s, {}).get(f)) for s in both]
         if sum(a) + sum(b) > 0: ks.append(kappa(a, b))
+    # judge (GPT-5) vs rule-based keyword detector, hemorrhage subtypes
+    RP = {s: r.get("findings", "") for s, r in ld(f"{T}/outputs/cache_path_a/path_b_triage.jsonl").items()}
+    RULE = {"iph": ["intraparenchymal", "intracerebral hemorrhage", "parenchymal hemorrhage"],
+            "ivh": ["intraventricular"], "edh": ["epidural", "extradural"],
+            "sah": ["subarachnoid"], "sdh": ["subdural"]}
+    def rule(s, f): t = RP.get(s, "").lower(); return any(k in t for k in RULE[f])
+    kr = []
+    for f in RULE:
+        a = [bool(G[s].get("mentioned", {}).get(f)) for s in both if s in RP]
+        b = [rule(s, f) for s in both if s in RP]
+        if sum(a) + sum(b) > 0: kr.append(kappa(a, b))
     return dict(pri=pri, mat=mat, cpri=cpri, cmat=cmat, agree=agree, n_c=len(cmiss),
                byf=byf.most_common(), d_urg=d_urg, d_nu=d_nu, kappa=float(np.mean(ks)),
-               n_urg=len(U), n_nu=len(nu))
+               krule=float(np.mean(kr)), n_urg=len(U), n_nu=len(nu))
 
 
 # ---------------------------------------------------------------- style
@@ -179,30 +190,32 @@ def main():
     ax.set_xlim(0, max(vals) + 1.5); ax.set_xticks(range(0, max(vals) + 1, 2))
     ax.set_xlabel("Decoding misses (of 40)")
 
-    # d — fraction of reports naming no critical finding
-    letter(84, 48, "d", "Reports naming no critical finding")
+    # d — fraction of reports reading as normal
+    letter(84, 48, "d", "Reports reading as normal")
     ax = ax_mm(98, 56, 28, 34)
     bars = [("Urgent", D["d_urg"], RPT), ("Non-urgent", D["d_nu"], PER)]
     for i, (lab, v, c) in enumerate(bars):
         ax.bar(i, v * 100, width=0.6, color=c, lw=0, zorder=3)
-        ax.text(i, v * 100 + 2, f"{v*100:.0f}%", ha="center", va="bottom", fontsize=FS_S,
+        ax.text(i, v * 100 + 2, f"{round(v*100)}%", ha="center", va="bottom", fontsize=FS_S,
                 color=INK, weight="bold")
     ax.set_xticks([0, 1]); ax.set_xticklabels(["Urgent", "Non-urgent"])
     ax.set_ylim(0, 108); ax.set_yticks([0, 25, 50, 75, 100])
-    ax.set_ylabel("Reports naming none (%)")
+    ax.set_ylabel("Reading as normal (%)")
 
-    # e — judge agreement
+    # e — judge agreement (GPT-5 vs Claude; and judge vs rule-based detector)
     letter(140, 48, "e", "Judge agreement")
-    ax = ax_mm(152, 56, 22, 34)
-    ax.bar(0, D["kappa"], width=0.34, color=SUB, lw=0, zorder=3)
-    ax.text(0, D["kappa"] + 0.02, f"κ = {D['kappa']:.2f}", ha="center", va="bottom",
-            fontsize=FS_S, color=INK, weight="bold")
+    ax = ax_mm(151, 56, 25, 34)
+    vals = [("GPT-5 vs\nClaude", D["kappa"]), ("vs rule-\nbased (hem.)", D["krule"])]
+    for i, (lab, v) in enumerate(vals):
+        ax.bar(i, v, width=0.5, color=SUB, lw=0, zorder=3)
+        ax.text(i, v + 0.02, f"{v:.2f}", ha="center", va="bottom", fontsize=FS_S,
+                color=INK, weight="bold")
     ax.axhline(0.8, color=RULE, lw=0.5, ls=(0, (2, 2)), zorder=1)
-    ax.text(0.42, 0.8, "0.8", fontsize=FS_S, color=SUB, va="center", ha="left")
-    ax.set_xticks([0]); ax.set_xticklabels(["GPT-5 vs\nClaude"], fontsize=FS_S)
-    ax.set_xlim(-0.6, 0.6)
+    ax.text(1.55, 0.8, "0.8", fontsize=FS_S, color=SUB, va="center", ha="left")
+    ax.set_xticks([0, 1]); ax.set_xticklabels([v[0] for v in vals], fontsize=FS_S)
+    ax.set_xlim(-0.6, 1.6)
     ax.set_ylim(0, 1.05); ax.set_yticks([0, 0.5, 1.0])
-    ax.set_ylabel("Mean Cohen's κ, findings named")
+    ax.set_ylabel("Mean Cohen's κ")
 
     exts = ["png", "svg"] + (["pdf"] if a.pdf else [])
     for e in exts:
