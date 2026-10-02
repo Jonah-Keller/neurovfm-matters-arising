@@ -1,7 +1,6 @@
 NeuroVFM Matters Arising — submission package for review (V. Srinivasan)
 Status: TEXT-COMPLETE. All manuscript/figure-legend/cover-letter tokens are filled
-(0 remaining). Figures 1 and Extended Data 1 are final. Extended Data Figs 2-3 are
-written in the legends but not yet rendered as panels (see "Remaining" below).
+(0 remaining). Figures 1 and Extended Data Figs 1-3 are all final and rendered.
 
 Headline results (GPT-5 primary screener, N = 472, 206 urgent):
   - Parity: classifier AUROC 0.949 (0.928-0.967); at the report's flag rate both
@@ -16,10 +15,7 @@ Headline results (GPT-5 primary screener, N = 472, 206 urgent):
     omissions are deterministic under greedy decoding, not sampling.
   - Coverage: 16/16 head-CT-assessable critical findings vs Babiarz (ref 6).
 
-Files: manuscript.docx, figures.docx (legends), cover_letter.docx (950-word main text,
-       dates filled), Figure_1.pdf/.png, Extended_Data_Fig_1.pdf/.png
+Files: manuscript.docx, figures.docx (legends), cover_letter.docx (1045-word main text,
+       dates filled), Figure_1 + Extended_Data_Fig_1/2/3 (pdf + png).
 
-Remaining (figure rendering only — no open analysis):
-  - Extended Data Fig. 2 (indication decomposition a; excluded-calvarial b; calibration
-    c, ECE 0.25; prevalence-reweighted curve d) — legend final, panels to be drawn.
-  - Extended Data Fig. 3 (six representative decoding-miss slices) — legend final.
+All figures rendered: Figure 1, Extended Data Figs 1-3 (pdf+png). No open items.
